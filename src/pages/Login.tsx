@@ -1,0 +1,119 @@
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useState } from "react";
+import { useShopContext } from "../context/ShopContext";
+import { useLoginMutation } from "../redux/api/userApi";
+import { MessageResponse } from "../types/api-types";
+import { auth } from "../utils/firebase";
+import toast from "react-hot-toast";
+
+const Login = () => {
+  const [currentState, setCurrentState] = useState<"Sign up" | "Login">(
+    "Login"
+  );
+
+  const [gender, setGender] = useState<"male" | "female">("male");
+  const [dob, setDob] = useState("17-Nov-1999");
+
+  const [login] = useLoginMutation();
+
+  const { navigate } = useShopContext();
+
+  const loginHandler = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    try {
+      const provider = new GoogleAuthProvider();
+
+      const { user } = await signInWithPopup(auth, provider);
+
+      const res = await login({
+        name: user.displayName!,
+        email: user.email!,
+        photo: user.photoURL!,
+        gender,
+        dob,
+        _id: user.uid,
+      });
+
+      if ("data" in res) {
+        toast.success(res.data?.message!);
+        navigate("/");
+      } else {
+        const error = res.error as FetchBaseQueryError;
+        const message = (error.data as MessageResponse).message;
+        console.log(message);
+      }
+    } catch (error) {
+      console.log("Sign in failed");
+    }
+  };
+
+  return (
+    <>
+      <form className="flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800">
+        <div className="inline-flex items-center gap-2 mb-2 mt-10">
+          <p className="prata-regular text-xl">{currentState}</p>
+          <hr className="border-none h-[1.5px] w-8 bg-gray-800" />
+        </div>
+        {currentState === "Login" ? (
+          ""
+        ) : (
+          <>
+            {/* <input
+              onChange={(e) => setName(e.target.value)}
+              type="text"
+              className="w-full px-3 py-2 border border-gray-800"
+              placeholder="Name"
+              required
+            /> */}
+          </>
+        )}
+        <input
+          onChange={(e) =>
+            setGender(e.target.value.toLowerCase() as typeof gender)
+          }
+          type="text"
+          className="w-full px-3 py-2 border border-gray-800"
+          placeholder="Gender"
+          // required
+        />
+        <input
+          onChange={(e) => setDob(e.target.value)}
+          type="date"
+          className="w-full px-3 py-2 border border-gray-800"
+          placeholder="Password"
+          // required
+        />
+        {/* <div className="w-full flex justify-between text-sm mt-[-8px]">
+          <p className="cursor-pointer w-[40%]">Forgot Your Password?</p>
+          {currentState === "Login" ? (
+            <p
+              onClick={() => setCurrentState("Sign up")}
+              className="cursor-pointer text-right w-[40%]"
+            >
+              Don't have an account? Create Account
+            </p>
+          ) : (
+            <p
+              onClick={() => setCurrentState("Login")}
+              className="cursor-pointer text-right w-[40%]"
+            >
+              Already have an account? Login
+            </p>
+          )}
+        </div> */}
+        <button
+          onClick={(e) => loginHandler(e)}
+          className="bg-black text-white font-light px-8 py-2 mt-4 rounded-md cursor-pointer"
+        >
+          {/* {currentState === "Login" ? "Sign In" : "Sign Up"} */}
+          Sign in with google
+        </button>
+      </form>
+    </>
+  );
+};
+
+export default Login;
