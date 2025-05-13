@@ -14,7 +14,6 @@ import {
 import { server } from "../redux/store";
 import { NewOrderRequest } from "../types/api-types";
 import { RootState, ShippingInfo } from "../types/types";
-import { responseToast } from "../utils/features";
 
 const PlaceOrder = () => {
   const { navigate } = useShopContext();
@@ -76,10 +75,10 @@ const PlaceOrder = () => {
     try {
       if (!cartItems) return;
 
-      let orderData: NewOrderRequest = {
+      const orderData: NewOrderRequest = {
         shippingInfo: formData!,
         orderItems: cartItems,
-        user: user?._id!,
+        user: user?._id ?? "",
         total: cartTotal,
         paymentMethod: null,
       };
@@ -147,7 +146,9 @@ const PlaceOrder = () => {
         default:
           break;
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

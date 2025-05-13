@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { LoadingText } from "../../components/Loaders";
 import {
   useAllUsersQuery,
   useDeleteUserMutation,
@@ -9,7 +10,7 @@ import {
 import { CustomError } from "../../types/api-types";
 import { RootState, User } from "../../types/types";
 import { responseToast } from "../../utils/features";
-import { LoadingText } from "../../components/Loaders";
+import { MdDeleteForever, MdEdit } from "react-icons/md";
 
 const Users = () => {
   const { user } = useSelector((state: RootState) => state.userReducer);
@@ -21,7 +22,7 @@ const Users = () => {
     isError: allUsersIsError,
     error: allUsersError,
     isLoading: allUsersIsLoading,
-  } = useAllUsersQuery(user?._id!);
+  } = useAllUsersQuery(user?._id || "");
 
   if (allUsersIsError) toast.error((allUsersError as CustomError).data.message);
 
@@ -43,14 +44,8 @@ const Users = () => {
     },
   ] = useUpdateUserMutation();
 
-  const getUsers = () => {
-    if (allUsersData) {
-      setList(allUsersData.users);
-    }
-  };
-
   const deleteHandler = async (userId: string) => {
-    const res = await deleteUser({ userId, adminUserId: user?._id! });
+    const res = await deleteUser({ userId, adminUserId: user?._id || "" });
 
     if (deleteUserIsError)
       toast.error((deleteUserError as CustomError).data.message);
@@ -59,7 +54,7 @@ const Users = () => {
   };
 
   const updateHandler = async (userId: string) => {
-    const res = await updateUser({ userId, adminUserId: user?._id! });
+    const res = await updateUser({ userId, adminUserId: user?._id || "" });
 
     if (userUpdateIsError)
       toast.error((userUpdateError as CustomError).data.message);
@@ -68,6 +63,12 @@ const Users = () => {
   };
 
   useEffect(() => {
+    const getUsers = () => {
+      if (allUsersData) {
+        setList(allUsersData.users);
+      }
+    };
+
     if (!allUsersIsLoading) getUsers();
   }, [allUsersData, allUsersIsLoading]);
 
@@ -80,19 +81,19 @@ const Users = () => {
       <p className="mb-6 text-2xl text-center">All Users</p>
       <div className="flex flex-col gap-2">
         {/* list table title */}
-        <div className="hidden md:grid grid-cols-[0.8fr_1.5fr_0.8fr_1.6fr_0.8fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm">
-          <b className="text-center text-lg">Image</b>
-          <b className="text-center text-lg">Name</b>
-          <b className="text-center text-lg">Gender</b>
-          <b className="text-center text-lg">Email</b>
-          <b className="text-center text-lg">Role</b>
-          <b className="text-center text-lg">Actions</b>
+        <div className="hidden md:grid grid-cols-[0.5fr_1.3fr_0.5fr_1.8fr_0.5fr_1.4fr] items-center py-1 px-2 border bg-gray-100 text-sm">
+          <b className="text-center text-[16px]">Image</b>
+          <b className="text-center text-[16px]">Name</b>
+          <b className="text-center text-[16px]">Gender</b>
+          <b className="text-center text-[16px]">Email</b>
+          <b className="text-center text-[16px]">Role</b>
+          <b className="text-center text-[16px]">Actions</b>
         </div>
 
         {/* Product list */}
         {list.map((user, index) => (
           <div
-            className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[0.8fr_1.5fr_0.8fr_1.6fr_0.8fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm"
+            className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[0.5fr_1.3fr_0.5fr_1.8fr_0.5fr_1.4fr] items-center py-1 px-2 border bg-gray-100 text-sm"
             key={index}
           >
             <img
@@ -100,24 +101,29 @@ const Users = () => {
               src={user.photo}
               alt=""
             />
-            <p className="text-center text-base capitalize">{user.name}</p>
-            <p className="text-center text-base capitalize">{user.gender}</p>
-            <p className="text-center text-base">{user.email}</p>
-            <p className="text-center text-base capitalize">{user.role}</p>
-            <div className="flex gap-2 justify-end md:justify-center">
+            <p className="text-center text-[14px] capitalize">{user.name}</p>
+            <p className="text-center text-[14px] capitalize">{user.gender}</p>
+            <p className="text-center text-[14px]">{user.email}</p>
+            <p className="text-center text-[14px] capitalize">{user.role}</p>
+            <div className="flex items-center gap-2 justify-end md:justify-center my-1.5">
               <button
                 onClick={() => updateHandler(user._id)}
-                className="cursor-pointer text-lg"
+                className="cursor-pointer flex gap-1 px-2 border-1 rounded-full border-black p-0.5"
                 disabled={userUpdateLoading}
               >
-                ✏️
+                <span className="text-[14px]">
+                  {user.role === "admin"
+                    ? "Demote to User"
+                    : "Promote to Admin"}
+                </span>
+                <MdEdit size={20} color="black" />
               </button>
               <button
                 onClick={() => deleteHandler(user._id)}
-                className="cursor-pointer text-lg"
+                className="cursor-pointer right-0"
                 disabled={deleteUserIsLoading}
               >
-                ❌
+                <MdDeleteForever size={26} color="red" />
               </button>
             </div>
           </div>

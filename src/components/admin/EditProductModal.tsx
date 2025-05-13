@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { admin_assets } from "../../assets/admin_assets/assets";
 import { useUpdateProductMutation } from "../../redux/api/productApi";
 import { Product } from "../../types/types";
+import { categoriesAndSubcategories } from "../../utils/features";
 
 interface Props {
   userId: string;
@@ -151,24 +152,43 @@ const EditProductModal: React.FC<Props> = ({
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
+
           <select
             className="w-full p-2 mb-3 border"
             value={category}
+            name="category"
             onChange={(e) => setCategory(e.target.value)}
+            required
           >
-            <option value="Men">Men</option>
-            <option value="Women">Women</option>
-            <option value="Kids">Kids</option>
+            <option value="" disabled selected={!category}>
+              Select a category
+            </option>
+            {Object.keys(categoriesAndSubcategories).map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
           </select>
+          
           <select
             className="w-full p-2 mb-3 border"
             value={subCategory}
+            name="subCategory"
             onChange={(e) => setSubCategory(e.target.value)}
+            disabled={!category}
+            required
           >
-            <option value="">(None)</option>
-            <option value="Topwear">Topwear</option>
-            <option value="Bottomwear">Bottomwear</option>
-            <option value="Winterwear">Winterwear</option>
+            <option value="" disabled selected={!subCategory}>
+              Select a sub-category
+            </option>
+            {category &&
+              categoriesAndSubcategories[
+                category as keyof typeof categoriesAndSubcategories
+              ]?.map((subCategory: string) => (
+                <option key={subCategory} value={subCategory}>
+                  {subCategory}
+                </option>
+              ))}
           </select>
 
           <div className="mb-3">

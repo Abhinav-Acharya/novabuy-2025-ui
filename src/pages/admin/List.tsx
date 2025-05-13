@@ -61,29 +61,29 @@ const List = () => {
       <p className="mb-6 text-2xl text-center">All Products</p>
       <div className="flex flex-col gap-2">
         {/* list table title */}
-        <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm">
-          <b>Image</b>
-          <b>Name</b>
-          <b>Category</b>
-          <b>Price</b>
-          <b className="text-center">Actions</b>
+        <div className="hidden md:grid grid-cols-[0.5fr_3.5fr_1.5fr_1fr_1.2fr] items-center py-1 px-2 border bg-gray-100 text-sm">
+          <b className="text-center text-[16px]">Image</b>
+          <b className="text-center text-[16px]">Name</b>
+          <b className="text-center text-[16px]">Category</b>
+          <b className="text-center text-[16px]">Price</b>
+          <b className="text-center text-[16px]">Actions</b>
         </div>
 
         {/* Product list */}
         {list.map((item, index) => (
           <div
-            className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center gap-2 py-1 px-2 border text-sm"
+            className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[0.5fr_3.5fr_1.5fr_1fr_1.2fr] items-center gap-2 py-1 px-2 border text-sm"
             key={index}
           >
             <img
-              className="w-12 cursor-pointer"
+              className="w-12 cursor-pointer block mx-auto"
               src={item.image[0]}
               alt=""
               onClick={() => navigate(`/product/${item._id}`)}
             />
-            <p>{item.name}</p>
-            <p>{item.category}</p>
-            <p>
+            <p className="text-center text-[14px]">{item.name}</p>
+            <p className="text-center text-[14px]">{item.category}</p>
+            <p className="text-center text-[14px]">
               {currency}
               {item.price}
             </p>
@@ -92,14 +92,14 @@ const List = () => {
                 onClick={() => updateHandler(item)}
                 className="cursor-pointer flex gap-2 px-3 border-1 rounded-full border-black"
               >
-                <span>Edit</span>
+                <span className="text-[14px]">Edit</span>
                 <MdEdit size={20} color="black" />
               </button>
               <button
                 onClick={() => deleteHandler(item._id)}
                 className="cursor-pointer flex gap-2 px-2 border-1 rounded-full border-black"
               >
-                <span>Delete</span>
+                <span className="text-[14px]">Delete</span>
                 <MdDeleteForever size={20} color="red" />
               </button>
             </div>

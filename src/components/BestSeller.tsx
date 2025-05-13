@@ -21,11 +21,9 @@ const BestSeller = () => {
 
       setBestsellers(bestSellerProducts.slice(0, 5));
     }
-  }, []);
+  }, [data?.products]);
 
-  return isLoading ? (
-    <LoadingText text="Loading best sellers ..." />
-  ) : (
+  return (
     <>
       <div className="my-10 ">
         <div className="text-center py-8 text-3xl">
@@ -35,11 +33,19 @@ const BestSeller = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-          {bestsellers.map((item, index) => (
-            <ProductItem key={index} product={item} />
-          ))}
-        </div>
+        {isLoading ? (
+          <>
+            <LoadingText text="Fetching bestsellers ..." />
+          </>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+              {bestsellers.map((item, index) => (
+                <ProductItem key={index} product={item} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </>
   );

@@ -36,7 +36,7 @@ const PaymentMethods = ({
             {/* <span className="radio-label">Stripe</span> */}
           </span>
         </label>
-        <label>
+        {/* <label>
           <input
             className="radio-input"
             type="radio"
@@ -47,9 +47,9 @@ const PaymentMethods = ({
             <span className="radio-icon">
               <img src={frontend_assets.razorpay_logo} alt="" />
             </span>
-            {/* <span className="radio-label">Razorpay</span> */}
+            <span className="radio-label">Razorpay</span>
           </span>
-        </label>
+        </label> */}
       </div>
     </>
   );

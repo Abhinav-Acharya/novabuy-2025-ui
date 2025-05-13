@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { SearchX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -14,22 +15,14 @@ import type { IHeaderPropsType, Product, RootState } from "../types/types";
 const ProductPage = ({ user }: IHeaderPropsType) => {
   const dispatch = useDispatch();
   const { productId } = useParams();
-  const { currency, navigate } = useShopContext();
+  const { currency } = useShopContext();
+  const isFirstRender = useRef(true);
 
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
 
-  const {
-    data: productData,
-    isError: productIsError,
-    error: productError,
-    isLoading: productIsLoading,
-  } = useProductDetailsQuery(productId as string);
-
-  if (productIsError) {
-    toast.error((productError as CustomError).data.message);
-    navigate("/");
-  }
+  const { data: productData, isLoading: productIsLoading } =
+    useProductDetailsQuery(productId as string);
 
   const [product, setProduct] = useState<Product | undefined>(undefined);
 
@@ -42,10 +35,15 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
   useEffect(() => {
     if (productData) {
       setProduct(productData?.product);
+      console.log(productData?.product);
     }
   }, [productData]);
 
   const addToCartHandler = (product: Product, size?: string) => {
+    if (product.sizes && product.sizes.length > 0 && !size) {
+      toast.error("Please select a size");
+      return;
+    }
     dispatch(addToCart({ product, size }));
     if (!cartLoading) toast.success("Product added to cart");
   };
@@ -56,14 +54,20 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
   ] = useUpdateUserCartMutation();
 
   useEffect(() => {
-    const updateCart = async () => {
-      if (user && cartItems) {
-        await updateUserCart({ userId: user._id, cartItems });
-      }
-      if (cartIsError) toast.error((cartError as CustomError).data.message);
-    };
-    updateCart();
-  }, [cartItems, user]);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (user && cartItems && cartItems.length > 0 && !cartLoading) {
+      updateUserCart({ userId: user._id, cartItems });
+      console.log("redux to db in product page");
+    }
+    if (cartIsError) {
+      toast.error((cartError as CustomError).data.message);
+      return;
+    }
+  }, [cartError, cartIsError, cartItems, cartLoading, updateUserCart, user]);
 
   return productIsLoading ? (
     <LoadingText text="Getting product details ..." />
@@ -115,7 +119,9 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
                 {product.description}
               </p>
               <div className="flex flex-col gap-4 my-8">
-                {product.sizes?.length! > 0 ? <p>Select Size</p> : null}
+                {product.sizes && product.sizes.length > 0 ? (
+                  <p>Select Size</p>
+                ) : null}
                 <div className="flex gap-2">
                   {product.sizes?.map((item, index) => (
                     <button
@@ -131,15 +137,8 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
                 </div>
               </div>
               <button
-                onClick={() => {
-                  if (product.sizes?.length! > 0 && !size) {
-                    toast.error("Please select a size");
-                    return;
-                  }
-                  cartIsLoading || cartLoading
-                    ? null
-                    : addToCartHandler(product, size);
-                }}
+                disabled={cartIsLoading || cartLoading}
+                onClick={() => addToCartHandler(product, size)}
                 className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
               >
                 ADD TO CART
@@ -184,7 +183,10 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
           /> */}
         </div>
       ) : (
-        <div className="">No product found</div>
+        <div className="flex gap-3 items-center justify-center mt-[150px] p-8">
+          <SearchX className="h-6 w-6" />
+          <div className="text-xl">No product found.</div>
+        </div>
       )}
     </div>
   );

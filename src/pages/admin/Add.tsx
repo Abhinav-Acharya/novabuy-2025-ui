@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -6,6 +7,7 @@ import { useShopContext } from "../../context/ShopContext";
 import { useNewProductMutation } from "../../redux/api/productApi";
 import { CustomError } from "../../types/api-types";
 import { Product, RootState } from "../../types/types";
+import { categoriesAndSubcategories } from "../../utils/features";
 
 const Add = () => {
   const { user } = useSelector((state: RootState) => state.userReducer);
@@ -69,7 +71,7 @@ const Add = () => {
 
     formData.set("name", name);
     formData.set("description", description);
-    formData.set("price", price && price.toString());
+    formData.set("price", price);
     formData.set("category", category);
     formData.set("subCategory", subCategory!);
     formData.set("bestseller", bestseller ? "true" : "false");
@@ -96,7 +98,6 @@ const Add = () => {
           toast.success(res.data.message);
         }
 
-        // Reset fields to their initial state
         setName("");
         setDescription("");
         setPrice("");
@@ -121,7 +122,7 @@ const Add = () => {
         onSubmit={handleSubmit}
       >
         <div>
-          <p className="mb-2">Upload Image (Add atleast 1 product image.)</p>
+          <p className="mb-2">Upload Image (Add atleast 1 product image)</p>
           <div className="flex gap-2">
             {[0, 1, 2, 3].map((num) => (
               <label htmlFor={`image${num}`} key={num}>
@@ -178,35 +179,43 @@ const Add = () => {
               Product Category <span className="text-red-500">*</span>
             </p>
             <select
-              className="w-full px-3 py-2"
+              className="w-full px-3 py-2 max-h-40 overflow-y-auto"
               name="category"
               onChange={(e) => setCategory(e.target.value)}
               required
-              // defaultValue={"Clothing"}
             >
-              {/* <option value="Clothing">Clothing</option> */}
-              <option value="" disabled>
+              <option value="" disabled selected={!category}>
                 Select a category
               </option>
-              <option value="Men">Men</option>
-              <option value="Women">Women</option>
-              <option value="Kids">Kids</option>
+              {Object.keys(categoriesAndSubcategories).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
           <div>
-            <p className="mb-2">Product Sub-Category</p>
+            <p className="mb-2">
+              Product Sub-Category <span className="text-red-500">*</span>
+            </p>
             <select
               className="w-full px-3 py-2"
               name="subCategory"
               onChange={(e) => setSubCategory(e.target.value)}
+              disabled={!category}
+              required
             >
-              <option value="" disabled>
+              <option value="" disabled selected={!subCategory}>
                 Select a sub-category
               </option>
-              <option value="">(None)</option>
-              <option value="Topwear">Topwear</option>
-              <option value="Bottomwear">Bottomwear</option>
-              <option value="Winterwear">Winterwear</option>
+              {category &&
+                categoriesAndSubcategories[
+                  category as keyof typeof categoriesAndSubcategories
+                ]?.map((subCategory: string) => (
+                  <option key={subCategory} value={subCategory}>
+                    {subCategory}
+                  </option>
+                ))}
             </select>
           </div>
           <div>
@@ -224,7 +233,7 @@ const Add = () => {
           </div>
         </div>
         {/* change later */}
-        {category !== "Clothing" ? (
+        {category.includes("Clothing") ? (
           <div>
             <p className="mb-2">Product Sizes</p>
             <div className="flex gap-3">
@@ -267,11 +276,19 @@ const Add = () => {
         </div>
         <button
           type="submit"
-          className="w-24 py-2 mt-4 bg-black text-white"
+          className="w-auto py-2 px-3 mt-4 bg-black text-white"
           disabled={isLoading}
         >
-          {isLoading ? "Adding..." : "ADD"}
-          {/* change later - add loader */}
+          {isLoading ? (
+            <>
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <p>Adding ...</p>
+              </div>
+            </>
+          ) : (
+            "Add Product"
+          )}
         </button>
       </form>
     </>

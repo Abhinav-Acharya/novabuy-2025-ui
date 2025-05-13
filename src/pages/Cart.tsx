@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { MdDeleteForever } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,8 +17,8 @@ import { RootState } from "../types/types";
 
 const Cart = () => {
   const dispatch = useDispatch();
-
   const { currency, navigate } = useShopContext();
+  const isFirstRender = useRef(true);
 
   const { user } = useSelector((state: RootState) => state.userReducer);
 
@@ -31,14 +31,6 @@ const Cart = () => {
     { isError: cartIsError, error: cartError, isLoading: cartIsLoading },
   ] = useUpdateUserCartMutation();
 
-  const updateCartDb = async () => {
-    if (user && cartItems) {
-      await updateUserCart({ userId: user._id, cartItems });
-      console.log("redux to db");
-    }
-    if (cartIsError) toast.error((cartError as CustomError).data.message);
-  };
-
   const handleCartAction = (
     action: "update" | "remove" | "reset",
     item?: CartItem,
@@ -48,18 +40,31 @@ const Cart = () => {
     console.log("updating");
     if (cartIsLoading || cartLoading) return;
 
-    if (action === "update" && item && quantity !== undefined) {
-      dispatch(
-        updateQuantity({
-          product: item,
-          size: size || "",
-          quantity,
-        })
-      );
-    } else if (action === "remove" && item) {
-      dispatch(removeFromCart({ productId: item._id, size: size || "" }));
-    } else if (action === "reset") {
-      dispatch(resetCart());
+    switch (action) {
+      case "update":
+        if (item && quantity !== undefined) {
+          dispatch(
+            updateQuantity({
+              product: item,
+              size: size || "",
+              quantity,
+            })
+          );
+        }
+        break;
+
+      case "remove":
+        if (item) {
+          dispatch(removeFromCart({ productId: item._id, size: size || "" }));
+        }
+        break;
+
+      case "reset":
+        dispatch(resetCart());
+        break;
+
+      default:
+        console.error("Invalid cart action");
     }
   };
 
@@ -69,10 +74,29 @@ const Cart = () => {
   };
 
   useEffect(() => {
-    if (cartItems && !cartIsLoading && !cartLoading) {
-      updateCartDb();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
-  }, [cartItems, user]);
+
+    if (cartLoading) {
+      return;
+    }
+
+    const updateCartInDb = async () => {
+      if (user && cartItems) {
+        await updateUserCart({ userId: user._id, cartItems });
+        console.log("redux to db in cart page");
+      }
+
+      if (cartIsError) {
+        toast.error((cartError as CustomError).data.message);
+        return;
+      }
+    };
+
+    updateCartInDb();
+  }, [cartItems, user, cartLoading, cartIsError, cartError, updateUserCart]);
 
   return (
     <>

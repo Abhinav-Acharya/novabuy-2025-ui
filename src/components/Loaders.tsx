@@ -1,4 +1,5 @@
 import { ISkeletonProps } from "../types/types";
+import { Loader2 } from "lucide-react";
 
 export const ScreenLoader = () => {
   return (
@@ -67,7 +68,8 @@ export const DeleteIcon = ({
 
 export const LoadingText = ({ text }: { text: string }) => {
   return (
-    <div className="flex items-center justify-center w-full h-full">
+    <div className="flex gap-3 items-center justify-center w-full h-full">
+      <Loader2 className="h-6 w-6 animate-spin" />
       <p className="text-lg font-medium text-gray-700">{text}</p>
     </div>
   );

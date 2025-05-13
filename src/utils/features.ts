@@ -20,6 +20,101 @@ export const responseToast = (
   }
 };
 
+//change later
+export const categoriesAndSubcategories = {
+  "Clothing (Men)": [
+    "Topwear",
+    "Bottomwear",
+    "Winterwear",
+    "Ethnic",
+    "Innerwear",
+  ],
+  "Clothing (Women)": [
+    "Topwear",
+    "Bottomwear",
+    "Winterwear",
+    "Ethnic",
+    "Lingerie",
+  ],
+  Footwear: [
+    "Sneakers",
+    "Formal Shoes",
+    "Sandals & Slippers",
+    "Boots",
+    "Heels",
+    "Kids Footwear",
+  ],
+  Accessories: [
+    "Bags & Backpacks",
+    "Watches",
+    "Wallets",
+    "Belts",
+    "Caps & Hats",
+    "Sunglasses",
+    "Jewelry",
+  ],
+  Electronics: [
+    "Mobiles",
+    "Laptops",
+    "Tablets",
+    "Headphones",
+    "Smartwatches",
+    "Gaming Consoles",
+  ],
+  "Home & Living": [
+    "Furniture",
+    "Home Decor",
+    "Lighting",
+    "Kitchenware",
+    "Bedding",
+    "Storage Solutions",
+  ],
+  "Beauty & Personal Care": [
+    "Makeup",
+    "Skincare",
+    "Haircare",
+    "Fragrances",
+    "Men's Grooming",
+    "Tools & Appliances",
+  ],
+  "Sports & Outdoors": [
+    "Fitness Equipment",
+    "Activewear",
+    "Sports Shoes",
+    "Outdoor Gear",
+    "Cycling",
+  ],
+  "Kids & Baby": [
+    "Clothing",
+    "Toys",
+    "School Supplies",
+    "Baby Care",
+    "Footwear",
+  ],
+  "Grocery & Essentials": [
+    "Fruits & Vegetables",
+    "Dairy & Bakery",
+    "Snacks",
+    "Beverages",
+    "Household Supplies",
+  ],
+  "Books & Stationery": [
+    "Fiction",
+    "Non-Fiction",
+    "Academic",
+    "Comics",
+    "Office Supplies",
+    "Art & Craft",
+  ],
+  Automotive: [
+    "Car Accessories",
+    "Bike Accessories",
+    "Spare Parts",
+    "Oils & Lubricants",
+    "Tools & Equipment",
+  ],
+};
+
 // export const getLastMonths = () => {
 //   const currentDate = moment();
 

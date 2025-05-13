@@ -11,7 +11,7 @@ const Orders = () => {
 
   const { user } = useSelector((state: RootState) => state.userReducer);
 
-  const { data, isError, error, isLoading } = useMyOrdersQuery(user?._id!);
+  const { data, isError, error, isLoading } = useMyOrdersQuery(user?._id || "");
 
   if (isError) {
     toast.error((error as CustomError).data.message);

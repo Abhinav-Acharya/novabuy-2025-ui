@@ -1,17 +1,23 @@
 import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
-import "./index.css";
 import ShopContextProvider from "./context/ShopContext.tsx";
+import "./index.css";
 import { store } from "./redux/store.ts";
-import { Provider } from "react-redux";
 
-createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <Provider store={store}>
-      <ShopContextProvider>
-        <App />
-      </ShopContextProvider>
-    </Provider>
-  </BrowserRouter>
-);
+const rootElement = document.getElementById("root");
+
+if (rootElement) {
+  createRoot(rootElement).render(
+    <BrowserRouter>
+      <Provider store={store}>
+        <ShopContextProvider>
+          <App />
+        </ShopContextProvider>
+      </Provider>
+    </BrowserRouter>
+  );
+} else {
+  console.error("Root element not found. Application failed to mount.");
+}

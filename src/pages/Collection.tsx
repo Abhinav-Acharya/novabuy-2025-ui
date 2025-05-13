@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { frontend_assets } from "../assets/frontend_assets/assets";
 import { ProductItem, Title } from "../components";
 import { LoadingText } from "../components/Loaders";
 import { useShopContext } from "../context/ShopContext";
-import { useAllProductsQuery } from "../redux/api/productApi";
-import { CustomError } from "../types/api-types";
 import { Product } from "../types/types";
 
 const Collection = () => {
-  const { data, isError, error, isLoading } = useAllProductsQuery("");
-
-  if (isError) toast.error((error as CustomError).data.message);
-
-  const { showSearch, search } = useShopContext();
-
-  const products = data?.products;
+  const {
+    showSearch,
+    search,
+    products,
+    allProductsLoading,
+    categories,
+    subCategories,
+  } = useShopContext();
 
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [filterProducts, setFilterProducts] = useState<Product[]>([]);
@@ -25,7 +23,7 @@ const Collection = () => {
     "relevant" | "low-high" | "high-low"
   >("relevant");
 
-  const toggleCategory = (e: any) => {
+  const toggleCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (category.includes(e.target.value)) {
       setCategory((prev) => prev.filter((item) => item !== e.target.value));
     } else {
@@ -33,7 +31,7 @@ const Collection = () => {
     }
   };
 
-  const toggleSubCategory = (e: any) => {
+  const toggleSubCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (subCategory.includes(e.target.value)) {
       setSubCategory((prev) => prev.filter((item) => item !== e.target.value));
     } else {
@@ -66,7 +64,7 @@ const Collection = () => {
   };
 
   const sortProducts = () => {
-    let filterProductsCopy = filterProducts.slice();
+    const filterProductsCopy = filterProducts.slice();
 
     switch (sortType) {
       case "low-high":
@@ -95,9 +93,7 @@ const Collection = () => {
     sortProducts();
   }, [sortType]);
 
-  return isLoading ? (
-    <LoadingText text="Loading all products ..." />
-  ) : (
+  return (
     <>
       <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t border-gray-950/20">
         {/* filters section */}
@@ -121,33 +117,20 @@ const Collection = () => {
           >
             <p className="mb-3 text-sm font-medium">CATEGORIES</p>
             <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-              <p className="flex gap-2">
-                <input
-                  type="checkbox"
-                  className="w-3"
-                  value={"Men"}
-                  onChange={toggleCategory}
-                />
-                Men
-              </p>
-              <p className="flex gap-2">
-                <input
-                  type="checkbox"
-                  className="w-3"
-                  value={"Women"}
-                  onChange={toggleCategory}
-                />
-                Women
-              </p>
-              <p className="flex gap-2">
-                <input
-                  type="checkbox"
-                  className="w-3"
-                  value={"Kids"}
-                  onChange={toggleCategory}
-                />
-                Kids
-              </p>
+              {categories.map((item, index) => (
+                <div key={index}>
+                  <p className="flex gap-2">
+                    <input
+                      type="checkbox"
+                      className="w-3"
+                      value={item}
+                      disabled={allProductsLoading}
+                      onChange={toggleCategory}
+                    />
+                    {item}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
           <div
@@ -155,35 +138,21 @@ const Collection = () => {
               showFilter ? "" : "hidden"
             } sm:block`}
           >
-            <p className="mb-3 text-sm font-medium">TYPE</p>
+            <p className="mb-3 text-sm font-medium">SUB CATEGORIES</p>
             <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-              <p className="flex gap-2">
-                <input
-                  type="checkbox"
-                  className="w-3"
-                  value={"Topwear"}
-                  onChange={toggleSubCategory}
-                />
-                Topwear
-              </p>
-              <p className="flex gap-2">
-                <input
-                  type="checkbox"
-                  className="w-3"
-                  value={"Bottomwear"}
-                  onChange={toggleSubCategory}
-                />
-                Bottomwear
-              </p>
-              <p className="flex gap-2">
-                <input
-                  type="checkbox"
-                  className="w-3"
-                  value={"Winterwear"}
-                  onChange={toggleSubCategory}
-                />
-                Winterwear
-              </p>
+              {subCategories.map((item, index) => (
+                <div key={index}>
+                  <p className="flex gap-2">
+                    <input
+                      type="checkbox"
+                      className="w-3"
+                      value={item}
+                      onChange={toggleSubCategory}
+                    />
+                    {item}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -196,16 +165,24 @@ const Collection = () => {
               className="border-2 border-gray-300 text-sm px-2"
             >
               <option value="relevant">Sort by: Relevance</option>
-              <option value="low-high">Sort by: Low to High</option>
               <option value="high-low">Sort by: High to Low</option>
+              <option value="low-high">Sort by: Low to High</option>
             </select>
           </div>
           {/* products */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-            {filterProducts.map((item, index) => (
-              <ProductItem key={index} product={item} />
-            ))}
-          </div>
+          {allProductsLoading ? (
+            <>
+              <LoadingText text="Fetching all products ..." />
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+                {filterProducts.map((item, index) => (
+                  <ProductItem key={index} product={item} />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

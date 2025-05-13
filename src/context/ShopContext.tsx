@@ -17,7 +17,6 @@ import { Product, RootState } from "../types/types";
 type Value = {
   products: Product[];
   currency: string;
-
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   showSearch: boolean;
@@ -25,6 +24,9 @@ type Value = {
   cartIsLoading: boolean;
   userLoading: boolean;
   navigate: NavigateFunction;
+  allProductsLoading: boolean;
+  categories: string[];
+  subCategories: (string | undefined)[];
 };
 
 const ShopContext = createContext<Value | null>(null);
@@ -32,7 +34,7 @@ const ShopContext = createContext<Value | null>(null);
 export const useShopContext = () => {
   const context = useContext(ShopContext);
   if (!context) {
-    throw new Error("No shopContext found");
+    throw new Error("No Shop Context found");
   }
   return context;
 };
@@ -41,6 +43,10 @@ const ShopContextProvider = ({ children }: { children: ReactNode }) => {
   const [search, setSearch] = useState<Value["search"]>("");
   const [showSearch, setShowSearch] = useState<Value["showSearch"]>(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Product["category"][]>([]);
+  const [subCategories, setSubCategories] = useState<Product["subCategory"][]>(
+    []
+  );
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -49,17 +55,31 @@ const ShopContextProvider = ({ children }: { children: ReactNode }) => {
     (state: RootState) => state.userReducer
   );
 
-  const { data, isError, error } = useAllProductsQuery("");
-
-  if (isError) toast.error((error as CustomError).data.message);
-
-  const getProducts = () => {
-    setProducts(data?.products!);
-  };
+  const {
+    data: productsData,
+    isError: allProductsQueryIsError,
+    error: allProductsQueryError,
+    isLoading: allProductsLoading,
+  } = useAllProductsQuery("");
 
   useEffect(() => {
-    getProducts();
-  }, []);
+    if (allProductsQueryIsError) {
+      toast.error((allProductsQueryError as CustomError).data.message);
+    } else if (!allProductsLoading && productsData) {
+      setCategories([
+        ...new Set(productsData?.products.map((item) => item.category)),
+      ]);
+      setSubCategories([
+        ...new Set(productsData?.products.map((item) => item.subCategory)),
+      ]);
+      setProducts(productsData.products);
+    }
+  }, [
+    allProductsQueryIsError,
+    allProductsLoading,
+    productsData,
+    allProductsQueryError,
+  ]);
 
   const {
     data: cartData,
@@ -68,15 +88,14 @@ const ShopContextProvider = ({ children }: { children: ReactNode }) => {
     isLoading: cartIsLoading,
   } = useGetUserCartQuery(user?._id ?? "", { skip: !user?._id });
 
-  if (cartIsError) toast.error((cartError as CustomError).data.message);
-
   useEffect(() => {
-    // console.log(cartData?.success, user?.name, cartIsLoading);
-    if (cartData?.success && user && !cartIsLoading) {
+    if (cartIsError) {
+      toast.error((cartError as CustomError).data.message);
+    } else if (cartData?.success && user && !cartIsLoading) {
       dispatch(updateCartFromDb(cartData.cartData));
       console.log("db to redux");
     }
-  }, [user, cartIsLoading]);
+  }, [cartIsError, cartError, cartData, user, cartIsLoading, dispatch]);
 
   const value: Value = {
     products,
@@ -88,6 +107,9 @@ const ShopContextProvider = ({ children }: { children: ReactNode }) => {
     navigate,
     cartIsLoading,
     userLoading,
+    allProductsLoading,
+    categories,
+    subCategories,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

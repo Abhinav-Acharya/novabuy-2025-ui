@@ -27,15 +27,11 @@ export const cartReducer = createSlice({
 
       const { product, size } = action.payload;
 
-      let existingCartItem: CartItem | undefined;
-
       if (!state.cartItems) state.cartItems = [];
 
-      if (state.cartItems.length > 0) {
-        existingCartItem = state.cartItems.find(
-          (item) => item._id === product._id && item.size === size
-        );
-      }
+      const existingCartItem = state.cartItems.find(
+        (item) => item._id === product._id && item.size === size
+      );
 
       if (existingCartItem) {
         existingCartItem.quantity += 1;

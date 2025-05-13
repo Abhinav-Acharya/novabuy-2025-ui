@@ -33,7 +33,7 @@ const App = () => {
 
   const isAdmin = location.pathname.startsWith("/admin"); //check later
 
-  const { user, loading } = useSelector(
+  const { user, loading: userLoading } = useSelector(
     (state: RootState) => state.userReducer
   );
 
@@ -44,29 +44,29 @@ const App = () => {
   // console.log(cartItems);
 
   useEffect(() => {
-    // console.log("onAuthStateChanged");
-
-    onAuthStateChanged(auth, async (firebaseUser) => {
-      // console.log("onAuthStateChanged");
-
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
           const data = await getUser(firebaseUser.uid);
           if (data) dispatch(userExist(data.user));
         } catch (error) {
-          console.error(error);
+          console.error("Error fetching user:", error);
         }
       } else {
         dispatch(userNotExist());
       }
     });
-  }, []);
+
+    return () => unsubscribe(); // Cleanup subscription on unmount
+  }, [dispatch]);
 
   // console.log(user?._id);
 
-  return loading || cartIsLoading ? (
-    <ScreenLoader />
-  ) : (
+  if (userLoading || cartIsLoading) {
+    return <ScreenLoader />;
+  }
+
+  return (
     <>
       {!isAdmin ? (
         <div className="px-4 sm:px-[5vw] md:px-[5vw] lg:px-[6vw] ecommerce">

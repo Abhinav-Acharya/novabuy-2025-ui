@@ -23,7 +23,7 @@ const CartTotal = ({ show }: { show: boolean }) => {
 
   useEffect(() => {
     if (!cartLoading) dispatch(getCartValue());
-  }, [cartItems, cartLoading]);
+  }, [cartItems, cartLoading, dispatch]);
 
   return cartLoading ? (
     <>
