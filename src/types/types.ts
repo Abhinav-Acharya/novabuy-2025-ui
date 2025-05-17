@@ -40,6 +40,7 @@ export type Product = {
   sizes?: string[];
   bestseller: boolean;
   createdAt?: Date;
+  stock: number;
 };
 
 export type ShippingInfo = {

@@ -14,10 +14,12 @@ export const userReducer = createSlice({
     userExist: (state, action: PayloadAction<User>) => {
       state.loading = false;
       state.user = action.payload;
+      console.log("user added to redux");
     },
     userNotExist: (state) => {
       state.loading = false;
       state.user = null;
+      console.log("user removed from redux");
     },
   },
 });

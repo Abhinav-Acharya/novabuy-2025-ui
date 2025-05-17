@@ -1,6 +1,13 @@
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes, useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { Footer, Navbar, ScreenLoader, SearchBar } from "./components";
+import { Navbar_admin, Sidebar_admin } from "./components/admin";
+import ProtectedRoute from "./components/protected-route";
+import { useShopContext } from "./context/ShopContext";
 import {
   About,
   Cart,
@@ -13,14 +20,6 @@ import {
   PlaceOrder,
   ProductPage,
 } from "./pages";
-
-import { onAuthStateChanged } from "firebase/auth";
-import { useEffect } from "react";
-import { Toaster } from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
-import { Navbar_admin, Sidebar_admin } from "./components/admin";
-import ProtectedRoute from "./components/protected-route";
-import { useShopContext } from "./context/ShopContext";
 import { Add, List, Orders_admin, Users } from "./pages/admin";
 import { getUser } from "./redux/api/userApi";
 import { userExist, userNotExist } from "./redux/reducers/userReducer";
@@ -59,8 +58,6 @@ const App = () => {
 
     return () => unsubscribe(); // Cleanup subscription on unmount
   }, [dispatch]);
-
-  // console.log(user?._id);
 
   if (userLoading || cartIsLoading) {
     return <ScreenLoader />;

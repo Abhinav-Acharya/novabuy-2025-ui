@@ -37,7 +37,7 @@ const Cart = () => {
     size?: string,
     quantity?: number
   ) => {
-    console.log("updating");
+    // console.log("updating");
     if (cartIsLoading || cartLoading) return;
 
     switch (action) {

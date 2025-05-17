@@ -6,22 +6,23 @@ import { useUpdateProductMutation } from "../../redux/api/productApi";
 import { Product } from "../../types/types";
 import { categoriesAndSubcategories } from "../../utils/features";
 
-interface Props {
+interface IEditProductModal {
   userId: string;
   isOpen: boolean;
   onClose: () => void;
   product: Product;
 }
 
-const EditProductModal: React.FC<Props> = ({
+const EditProductModal = ({
   isOpen,
   onClose,
   product,
   userId,
-}) => {
+}: IEditProductModal) => {
   const [name, setName] = useState(product.name);
   const [description, setDescription] = useState(product.description);
   const [price, setPrice] = useState(product.price.toString());
+  const [stock, setStock] = useState(product.stock.toString());
   const [category, setCategory] = useState(product.category);
   const [subCategory, setSubCategory] = useState(product.subCategory || "");
   const [bestseller, setBestseller] = useState(product.bestseller);
@@ -67,6 +68,7 @@ const EditProductModal: React.FC<Props> = ({
     if (description !== product.description)
       formData.set("description", description);
     if (price !== product.price.toString()) formData.set("price", price);
+    if (stock !== product.stock.toString()) formData.set("stock", stock);
     if (category !== product.category) formData.set("category", category);
     if (subCategory !== product.subCategory)
       formData.set("subCategory", subCategory);
@@ -107,12 +109,12 @@ const EditProductModal: React.FC<Props> = ({
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center px-4 backdrop-blur-xs">
-        <Dialog.Panel className="w-full max-w-xl max-h-[90vw] overflow-y-auto bg-white p-6 rounded-lg shadow-xl">
-          <Dialog.Title className="text-xl font-semibold mb-4">
+        <Dialog.Panel className="w-full max-w-[50%] max-h-[95%] overflow-y-auto bg-white p-6 rounded-lg shadow-xl">
+          <Dialog.Title className="text-xl font-semibold mb-4 text-center">
             Edit Product
           </Dialog.Title>
 
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4 justify-center">
             {[0, 1, 2, 3].map((i) => (
               <label key={i} htmlFor={`img-${i}`}>
                 <div>
@@ -132,67 +134,93 @@ const EditProductModal: React.FC<Props> = ({
               </label>
             ))}
           </div>
-
-          <input
-            className="w-full p-2 mb-3 border"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <textarea
-            className="w-full p-2 mb-3 border"
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <input
-            className="w-full p-2 mb-3 border"
-            placeholder="Price"
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-
-          <select
-            className="w-full p-2 mb-3 border"
-            value={category}
-            name="category"
-            onChange={(e) => setCategory(e.target.value)}
-            required
-          >
-            <option value="" disabled selected={!category}>
-              Select a category
-            </option>
-            {Object.keys(categoriesAndSubcategories).map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          
-          <select
-            className="w-full p-2 mb-3 border"
-            value={subCategory}
-            name="subCategory"
-            onChange={(e) => setSubCategory(e.target.value)}
-            disabled={!category}
-            required
-          >
-            <option value="" disabled selected={!subCategory}>
-              Select a sub-category
-            </option>
-            {category &&
-              categoriesAndSubcategories[
-                category as keyof typeof categoriesAndSubcategories
-              ]?.map((subCategory: string) => (
-                <option key={subCategory} value={subCategory}>
-                  {subCategory}
+          <div className="flex flex-col gap-1 mb-4">
+            <p>Name:</p>
+            <input
+              className="w-full p-2 border"
+              placeholder="Name"
+              id="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1 mb-4">
+            <p>Description:</p>
+            <textarea
+              className="w-full p-2 border"
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-3">
+            <div className="flex flex-col gap-1 mb-3 w-1/2">
+              <p>Category:</p>
+              <select
+                className="w-full p-2 border"
+                value={category}
+                name="category"
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              >
+                <option value="" disabled selected={!category}>
+                  Select a category
                 </option>
-              ))}
-          </select>
-
+                {Object.keys(categoriesAndSubcategories).map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-1 mb-3 w-1/2">
+              <p>Sub Category:</p>
+              <select
+                className="w-full p-2 border"
+                value={subCategory}
+                name="subCategory"
+                onChange={(e) => setSubCategory(e.target.value)}
+                disabled={!category}
+                required
+              >
+                <option value="" disabled selected={!subCategory}>
+                  Select a sub-category
+                </option>
+                {category &&
+                  categoriesAndSubcategories[
+                    category as keyof typeof categoriesAndSubcategories
+                  ]?.map((subCategory: string) => (
+                    <option key={subCategory} value={subCategory}>
+                      {subCategory}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <div className="flex-1 mb-3">
+              <p>Price:</p>
+              <input
+                className="w-full p-2 border"
+                placeholder="Price"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+            <div className="flex-1 mb-3">
+              <p>Stock:</p>
+              <input
+                className="w-full p-2 border"
+                placeholder="Price"
+                type="number"
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+              />
+            </div>
+          </div>
           <div className="mb-3">
-            <p className="mb-2">Sizes</p>
+            <p className="mb-2">Sizes:</p>
             <div className="flex gap-3">
               {["S", "M", "L", "XL", "XXL"].map((size) => (
                 <label key={size} className="flex items-center gap-2">

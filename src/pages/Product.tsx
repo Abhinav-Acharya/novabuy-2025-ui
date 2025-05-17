@@ -35,7 +35,7 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
   useEffect(() => {
     if (productData) {
       setProduct(productData?.product);
-      console.log(productData?.product);
+      // console.log(productData?.product);
     }
   }, [productData]);
 

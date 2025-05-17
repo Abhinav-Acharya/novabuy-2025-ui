@@ -17,6 +17,7 @@ const Add = () => {
   const [name, setName] = useState<Product["name"]>("");
   const [description, setDescription] = useState<Product["description"]>("");
   const [price, setPrice] = useState<string>("");
+  const [stock, setStock] = useState<string>("");
   const [category, setCategory] = useState<Product["category"]>("");
   const [subCategory, setSubCategory] = useState<Product["subCategory"]>("");
   const [bestseller, setBestseller] = useState<Product["bestseller"]>(false);
@@ -72,6 +73,7 @@ const Add = () => {
     formData.set("name", name);
     formData.set("description", description);
     formData.set("price", price);
+    formData.set("stock", stock);
     formData.set("category", category);
     formData.set("subCategory", subCategory!);
     formData.set("bestseller", bestseller ? "true" : "false");
@@ -101,6 +103,7 @@ const Add = () => {
         setName("");
         setDescription("");
         setPrice("");
+        setStock("");
         setCategory("");
         setSubCategory("(None)");
         setBestseller(false);
@@ -218,12 +221,14 @@ const Add = () => {
                 ))}
             </select>
           </div>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
           <div>
             <p className="mb-2">
               Product Price <span className="text-red-500">*</span>
             </p>
             <input
-              className="w-full px-3 py-2 sm:w-[120px]"
+              className="w-full px-3 py-2"
               type="number"
               placeholder={`${currency}999`}
               onChange={(e) => setPrice(e.target.value)}
@@ -231,38 +236,50 @@ const Add = () => {
               required
             />
           </div>
+          <div>
+            <p className="mb-2">
+              Stock <span className="text-red-500">*</span>
+            </p>
+            <input
+              className="w-full px-3 py-2"
+              type="number"
+              placeholder={"Stock available"}
+              onChange={(e) => setStock(e.target.value)}
+              value={stock}
+              required
+            />
+          </div>
         </div>
         {/* change later */}
-        {category.includes("Clothing") ? (
-          <div>
-            <p className="mb-2">Product Sizes</p>
-            <div className="flex gap-3">
-              {["S", "M", "L", "XL", "XXL"].map((size) => (
-                <label key={size} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    value={size}
-                    onChange={(e) => {
-                      setSizes((prev) => {
-                        if (e.target.checked) {
-                          return [...(prev || []), size];
-                        }
-                        return (prev || []).filter((s) => s !== size);
-                      });
-                    }}
-                  />
-                  <p
-                    className={`${
-                      sizes?.includes(size) ? "bg-pink-100" : "bg-slate-200"
-                    } px-3 py-1 cursor-pointer`}
-                  >
-                    {size}
-                  </p>
-                </label>
-              ))}
-            </div>
+
+        <div hidden={!category.includes("Clothing")}>
+          <p className="mb-2">Product Sizes</p>
+          <div className="flex gap-3">
+            {["S", "M", "L", "XL", "XXL"].map((size) => (
+              <label key={size} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  value={size}
+                  onChange={(e) => {
+                    setSizes((prev) => {
+                      if (e.target.checked) {
+                        return [...(prev || []), size];
+                      }
+                      return (prev || []).filter((s) => s !== size);
+                    });
+                  }}
+                />
+                <p
+                  className={`${
+                    sizes?.includes(size) ? "bg-pink-100" : "bg-slate-200"
+                  } px-3 py-1 cursor-pointer`}
+                >
+                  {size}
+                </p>
+              </label>
+            ))}
           </div>
-        ) : null}
+        </div>
         <div className="flex gap-2 mt-2">
           <input
             type="checkbox"
