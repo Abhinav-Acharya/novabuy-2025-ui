@@ -95,7 +95,6 @@ const EditProductModal = ({
 
       if (res.success) {
         toast.success(res.message);
-        onClose();
       }
     } catch (err: unknown) {
       if (err instanceof Error && err.message) {
@@ -103,6 +102,8 @@ const EditProductModal = ({
       } else {
         toast.error("Error updating product");
       }
+    } finally {
+      onClose();
     }
   };
 
@@ -219,7 +220,7 @@ const EditProductModal = ({
               />
             </div>
           </div>
-          <div className="mb-3">
+          <div className="mb-3" hidden={!category.includes("Clothing")}>
             <p className="mb-2">Sizes:</p>
             <div className="flex gap-3">
               {["S", "M", "L", "XL", "XXL"].map((size) => (

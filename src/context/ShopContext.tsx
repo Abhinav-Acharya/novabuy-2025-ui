@@ -6,11 +6,9 @@ import {
   useState,
 } from "react";
 import { toast } from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useAllProductsQuery } from "../redux/api/productApi";
-import { useGetUserCartQuery } from "../redux/api/userApi";
-import { updateCartFromDb } from "../redux/reducers/cartReducer";
 import { CustomError } from "../types/api-types";
 import { Product, RootState } from "../types/types";
 
@@ -21,7 +19,7 @@ type Value = {
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   showSearch: boolean;
   setShowSearch: React.Dispatch<React.SetStateAction<boolean>>;
-  cartIsLoading: boolean;
+  // cartIsLoading: boolean;
   userLoading: boolean;
   navigate: NavigateFunction;
   allProductsLoading: boolean;
@@ -49,11 +47,12 @@ const ShopContextProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  const { user, loading: userLoading } = useSelector(
-    (state: RootState) => state.userReducer
-  );
+  const {
+    //  user,
+    loading: userLoading,
+  } = useSelector((state: RootState) => state.userReducer);
 
   const {
     data: productsData,
@@ -81,21 +80,21 @@ const ShopContextProvider = ({ children }: { children: ReactNode }) => {
     allProductsQueryError,
   ]);
 
-  const {
-    data: cartData,
-    error: cartError,
-    isError: cartIsError,
-    isLoading: cartIsLoading,
-  } = useGetUserCartQuery(user?._id ?? "", { skip: !user?._id });
+  // const {
+  //   data: cartData,
+  //   error: cartError,
+  //   isError: cartIsError,
+  //   isLoading: cartIsLoading,
+  // } = useGetUserCartQuery(user?._id ?? "", { skip: !user?._id });
 
-  useEffect(() => {
-    if (cartIsError) {
-      toast.error((cartError as CustomError).data.message);
-    } else if (cartData?.success && user && !cartIsLoading) {
-      dispatch(updateCartFromDb(cartData.cartData));
-      console.log("db to redux");
-    }
-  }, [cartIsError, cartError, cartData, user, cartIsLoading, dispatch]);
+  // useEffect(() => {
+  //   if (cartIsError) {
+  //     toast.error((cartError as CustomError).data.message);
+  //   } else if (cartData?.success && user && !cartIsLoading) {
+  //     dispatch(updateCartFromDb(cartData.cartData));
+  //     console.log("db to redux");
+  //   }
+  // }, [cartIsError, cartError, cartData, user, cartIsLoading, dispatch]);
 
   const value: Value = {
     products,
@@ -105,7 +104,7 @@ const ShopContextProvider = ({ children }: { children: ReactNode }) => {
     showSearch,
     setShowSearch,
     navigate,
-    cartIsLoading,
+    // cartIsLoading,
     userLoading,
     allProductsLoading,
     categories,

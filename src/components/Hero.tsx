@@ -26,7 +26,7 @@ const Hero = () => {
           className="w-[50%] sm:w-1/2"
           alt=""
         />
-        {/* change later - image size */}
+        {/* change later - image */}
       </div>
     </>
   );

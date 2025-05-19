@@ -1,14 +1,15 @@
 import { SearchX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { frontend_assets } from "../assets/frontend_assets/assets";
+import { RelatedProducts } from "../components";
 import { LoadingText } from "../components/Loaders";
 import { useShopContext } from "../context/ShopContext";
 import { useProductDetailsQuery } from "../redux/api/productApi";
 import { useUpdateUserCartMutation } from "../redux/api/userApi";
-import { addToCart } from "../redux/reducers/cartReducer";
+import { addToCart, clearCartSource } from "../redux/reducers/cartReducer";
 import { CustomError } from "../types/api-types";
 import type { IHeaderPropsType, Product, RootState } from "../types/types";
 
@@ -16,19 +17,24 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
   const dispatch = useDispatch();
   const { productId } = useParams();
   const { currency } = useShopContext();
-  const isFirstRender = useRef(true);
 
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
+  const [product, setProduct] = useState<Product | undefined>(undefined);
+
+  const {
+    cartItems,
+    loading: cartLoading,
+    source,
+  } = useSelector((state: RootState) => state.cartReducer);
 
   const { data: productData, isLoading: productIsLoading } =
     useProductDetailsQuery(productId as string);
 
-  const [product, setProduct] = useState<Product | undefined>(undefined);
-
-  const { cartItems, loading: cartLoading } = useSelector(
-    (state: RootState) => state.cartReducer
-  );
+  const [
+    updateUserCart,
+    { isError: cartIsError, isLoading: cartIsLoading, error: cartError },
+  ] = useUpdateUserCartMutation();
 
   // console.log(cartItems);
 
@@ -40,6 +46,11 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
   }, [productData]);
 
   const addToCartHandler = (product: Product, size?: string) => {
+    if (product.stock < 1) {
+      toast.error("Product is not in stock. Please check later.");
+      return;
+    }
+
     if (product.sizes && product.sizes.length > 0 && !size) {
       toast.error("Please select a size");
       return;
@@ -48,26 +59,24 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
     if (!cartLoading) toast.success("Product added to cart");
   };
 
-  const [
-    updateUserCart,
-    { isError: cartIsError, isLoading: cartIsLoading, error: cartError },
-  ] = useUpdateUserCartMutation();
-
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    if (cartLoading || source !== "user") return;
 
-    if (user && cartItems && cartItems.length > 0 && !cartLoading) {
-      updateUserCart({ userId: user._id, cartItems });
-      console.log("redux to db in product page");
-    }
-    if (cartIsError) {
-      toast.error((cartError as CustomError).data.message);
-      return;
-    }
-  }, [cartError, cartIsError, cartItems, cartLoading, updateUserCart, user]);
+    const updateCartInDb = async () => {
+      if (user && cartItems && cartItems.length > 0) {
+        await updateUserCart({ userId: user._id, cartItems });
+        console.log("redux to db in product page");
+        dispatch(clearCartSource());
+      }
+      if (cartIsError) {
+        toast.error((cartError as CustomError).data.message);
+        return;
+      }
+    };
+
+    updateCartInDb();
+    // eslint-disable-next-line
+  }, [cartLoading, cartItems, source]);
 
   return productIsLoading ? (
     <LoadingText text="Getting product details ..." />
@@ -176,11 +185,11 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
               </p>
             </div>
           </div>
-          {/* related products */}
-          {/* <RelatedProducts
-            category={products.category}
-            subcategory={products.subCategory}
-          /> */}
+
+          <RelatedProducts
+            category={product.category}
+            subcategory={product.subCategory}
+          />
         </div>
       ) : (
         <div className="flex gap-3 items-center justify-center mt-[150px] p-8">

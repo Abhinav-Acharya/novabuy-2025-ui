@@ -1,13 +1,12 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes, useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { Footer, Navbar, ScreenLoader, SearchBar } from "./components";
 import { Navbar_admin, Sidebar_admin } from "./components/admin";
 import ProtectedRoute from "./components/protected-route";
-import { useShopContext } from "./context/ShopContext";
 import {
   About,
   Cart,
@@ -21,8 +20,10 @@ import {
   ProductPage,
 } from "./pages";
 import { Add, List, Orders_admin, Users } from "./pages/admin";
-import { getUser } from "./redux/api/userApi";
+import { getUser, useGetUserCartQuery } from "./redux/api/userApi";
+import { updateCartFromDb } from "./redux/reducers/cartReducer";
 import { userExist, userNotExist } from "./redux/reducers/userReducer";
+import { CustomError } from "./types/api-types";
 import { RootState } from "./types/types";
 import { auth } from "./utils/firebase";
 
@@ -36,11 +37,12 @@ const App = () => {
     (state: RootState) => state.userReducer
   );
 
-  const { cartIsLoading } = useShopContext();
-
-  // const { cartItems } = useSelector((state: RootState) => state.cartReducer);
-
-  // console.log(cartItems);
+  const {
+    data: cartData,
+    error: cartError,
+    isError: cartIsError,
+    isLoading: cartIsLoading,
+  } = useGetUserCartQuery(user?._id ?? "", { skip: !user?._id });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -58,6 +60,16 @@ const App = () => {
 
     return () => unsubscribe(); // Cleanup subscription on unmount
   }, [dispatch]);
+
+  useEffect(() => {
+    if (cartIsError) {
+      toast.error((cartError as CustomError).data.message);
+    } else if (cartData?.success && user && !cartIsLoading) {
+      dispatch(updateCartFromDb(cartData.cartData));
+      console.log("db to redux");
+    }
+    // eslint-disable-next-line
+  }, [cartData, user, cartIsLoading, dispatch]);
 
   if (userLoading || cartIsLoading) {
     return <ScreenLoader />;

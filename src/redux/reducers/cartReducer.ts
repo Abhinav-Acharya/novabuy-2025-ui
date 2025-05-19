@@ -13,6 +13,7 @@ const initialState: ICartReducerInitialState = {
   cartTotal: 0,
   shippingInfo: null,
   paymentMethod: null,
+  source: null,
 };
 
 export const cartReducer = createSlice({
@@ -51,6 +52,7 @@ export const cartReducer = createSlice({
         0
       );
 
+      state.source = "user";
       state.loading = false;
     },
 
@@ -81,6 +83,7 @@ export const cartReducer = createSlice({
         0
       );
 
+      state.source = "user";
       state.loading = false;
     },
 
@@ -103,6 +106,7 @@ export const cartReducer = createSlice({
         0
       );
 
+      state.source = "user";
       state.loading = false;
     },
 
@@ -139,6 +143,7 @@ export const cartReducer = createSlice({
         0
       );
 
+      state.source = "db";
       state.loading = false;
     },
 
@@ -154,10 +159,20 @@ export const cartReducer = createSlice({
       state.loading = false;
     },
 
-    resetCart: () => ({
-      ...initialState,
-      cartItems: [],
-    }),
+    clearCartSource: (state) => {
+      state.loading = true;
+      state.source = null;
+      state.loading = false;
+    },
+
+    resetCart: (state, action) => {
+      state.loading = true;
+      Object.assign(state, {
+        ...initialState,
+        cartItems: [],
+        source: action.payload,
+      });
+    },
   },
 });
 
@@ -170,4 +185,5 @@ export const {
   updateCartFromDb,
   saveShippingInfo,
   setPaymentMethod,
+  clearCartSource,
 } = cartReducer.actions;

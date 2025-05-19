@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { MdDeleteForever } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,6 +7,7 @@ import { CartTotal, Title } from "../components";
 import { useShopContext } from "../context/ShopContext";
 import { useUpdateUserCartMutation } from "../redux/api/userApi";
 import {
+  clearCartSource,
   removeFromCart,
   resetCart,
   updateQuantity,
@@ -18,13 +19,14 @@ import { RootState } from "../types/types";
 const Cart = () => {
   const dispatch = useDispatch();
   const { currency, navigate } = useShopContext();
-  const isFirstRender = useRef(true);
 
   const { user } = useSelector((state: RootState) => state.userReducer);
 
-  const { cartItems, loading: cartLoading } = useSelector(
-    (state: RootState) => state.cartReducer
-  );
+  const {
+    cartItems,
+    loading: cartLoading,
+    source,
+  } = useSelector((state: RootState) => state.cartReducer);
 
   const [
     updateUserCart,
@@ -37,8 +39,10 @@ const Cart = () => {
     size?: string,
     quantity?: number
   ) => {
-    // console.log("updating");
-    if (cartIsLoading || cartLoading) return;
+    if (cartIsLoading || cartLoading) {
+      toast.error("Previous cart update is not completed. Please wait");
+      return;
+    }
 
     switch (action) {
       case "update":
@@ -60,7 +64,7 @@ const Cart = () => {
         break;
 
       case "reset":
-        dispatch(resetCart());
+        dispatch(resetCart("user"));
         break;
 
       default:
@@ -74,19 +78,13 @@ const Cart = () => {
   };
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    if (cartLoading) {
-      return;
-    }
+    if (cartLoading || source !== "user") return;
 
     const updateCartInDb = async () => {
       if (user && cartItems) {
         await updateUserCart({ userId: user._id, cartItems });
         console.log("redux to db in cart page");
+        dispatch(clearCartSource());
       }
 
       if (cartIsError) {
@@ -96,7 +94,8 @@ const Cart = () => {
     };
 
     updateCartInDb();
-  }, [cartItems, user, cartLoading, cartIsError, cartError, updateUserCart]);
+    // eslint-disable-next-line
+  }, [cartLoading, cartItems, source]);
 
   return (
     <>
@@ -191,7 +190,6 @@ const Cart = () => {
               })}
             </div>
 
-            {/* Cart Total Section */}
             <div>
               <CartTotal show={true} />
               <div className="w-full flex justify-center">

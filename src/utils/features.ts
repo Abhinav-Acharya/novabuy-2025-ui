@@ -20,6 +20,15 @@ export const responseToast = (
   }
 };
 
+export const formatDate = (orderDate: Date) => {
+  const date = new Date(orderDate);
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+
+  return `${day} ${month} ${year}`;
+};
+
 //change later
 export const categoriesAndSubcategories = {
   "Clothing (Men)": [

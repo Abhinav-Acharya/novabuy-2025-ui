@@ -11,9 +11,9 @@ const ProductItem = ({ product }: { product: Product }) => {
         className="text-gray-700 cursor-pointer"
         to={`/product/${product._id}`}
       >
-        <div className="overflow-hidden">
+        <div className="overflow-hidden h-[75%]">
           <img
-            className="hover:scale-110 transition ease-in-out"
+            className="hover:scale-110 transition ease-in-out h-full object-contain"
             src={product.image[0]}
             alt=""
           />

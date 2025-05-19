@@ -5,29 +5,29 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import toast from "react-hot-toast";
-import { useDeleteProductMutation } from "../../redux/api/productApi";
+import { useDeleteOrderMutation } from "../../redux/api/orderApi";
 import { responseToast } from "../../utils/features";
 
 interface IEditProductModal {
   userId: string;
   isOpen: boolean;
   onClose: () => void;
-  productId: string;
+  orderId: string;
 }
 
-const DeleteProductModal = ({
+const DeleteOrderModal = ({
   isOpen,
   onClose,
-  productId,
+  orderId,
   userId,
 }: IEditProductModal) => {
-  const [deleteProduct, { isLoading }] = useDeleteProductMutation();
+  const [deleteOrder, { isLoading }] = useDeleteOrderMutation();
 
   const handleDelete = async () => {
     try {
-      const res = await deleteProduct({
+      const res = await deleteOrder({
         userId: userId ? userId : "",
-        productId,
+        orderId,
       });
 
       if (res?.data?.success) {
@@ -37,7 +37,7 @@ const DeleteProductModal = ({
       if (err instanceof Error && err.message) {
         toast.error(err.message);
       } else {
-        toast.error("Error deleting product");
+        toast.error("Error deleteing order");
       }
     } finally {
       onClose();
@@ -49,10 +49,10 @@ const DeleteProductModal = ({
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center px-4 backdrop-blur-xs">
         <DialogPanel className="w-full max-w-[50%] max-h-[95%] overflow-y-auto bg-white p-6 rounded-lg shadow-xl">
           <DialogTitle className="text-xl font-semibold mb-4 text-center">
-            Delete Product
+            Delete Order
           </DialogTitle>
           <Description className="mb-6 text-center">
-            Are you sure you want to delete this product ?
+            Are you sure you want to delete this order ?
           </Description>
 
           <div className="flex items-center justify-center gap-3">
@@ -76,4 +76,4 @@ const DeleteProductModal = ({
   );
 };
 
-export default DeleteProductModal;
+export default DeleteOrderModal;

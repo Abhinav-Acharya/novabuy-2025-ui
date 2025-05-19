@@ -1,22 +1,25 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { CartTotal, Title } from "../components";
 import PaymentMethods from "../components/paymentMethods/PaymentMethods";
 import { useShopContext } from "../context/ShopContext";
 import { useNewOrderMutation } from "../redux/api/orderApi";
+import { useUpdateUserCartMutation } from "../redux/api/userApi";
 import {
   resetCart,
   saveShippingInfo,
   setPaymentMethod,
 } from "../redux/reducers/cartReducer";
 import { server } from "../redux/store";
-import { NewOrderRequest } from "../types/api-types";
+import { CustomError, NewOrderRequest } from "../types/api-types";
 import { RootState, ShippingInfo } from "../types/types";
+import { responseToast } from "../utils/features";
 
 const PlaceOrder = () => {
   const { navigate } = useShopContext();
+  const dispatch = useDispatch();
 
   const {
     cartItems,
@@ -24,17 +27,27 @@ const PlaceOrder = () => {
     loading: cartLoading,
   } = useSelector((state: RootState) => state.cartReducer);
 
-  if (cartItems?.length === 0) navigate("/");
-
-  const dispatch = useDispatch();
-
   const { user } = useSelector((state: RootState) => state.userReducer);
+
+  const [
+    updateUserCart,
+    { isError: cartIsError, error: cartError, isLoading: cartIsLoading },
+  ] = useUpdateUserCartMutation();
+
+  const updateCartInDb = async () => {
+    if (user) {
+      await updateUserCart({ userId: user._id, cartItems });
+    }
+
+    if (cartIsError) {
+      toast.error((cartError as CustomError).data.message);
+      return;
+    }
+  };
 
   const [method, setMethod] = useState<"Stripe" | "Razorpay" | "COD" | null>(
     null
   );
-
-  // console.log(method);
 
   const [newOrder] = useNewOrderMutation();
 
@@ -83,7 +96,7 @@ const PlaceOrder = () => {
         paymentMethod: null,
       };
 
-      console.log(orderData);
+      // console.log(orderData);
 
       if (!method) toast.error("Please select a payment method");
 
@@ -95,9 +108,9 @@ const PlaceOrder = () => {
           try {
             const res = await newOrder(orderData);
             if (res.data?.success) {
-              // responseToast(res, navigate, "/orders");
-              dispatch(resetCart());
-              navigate("/orders");
+              dispatch(resetCart("order"));
+              await updateCartInDb();
+              responseToast(res, navigate, "/orders");
             }
           } catch (error) {
             console.log(error);
@@ -150,6 +163,11 @@ const PlaceOrder = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (!cartItems || cartItems.length === 0) navigate("/");
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <>
@@ -252,7 +270,7 @@ const PlaceOrder = () => {
             placeholder="Phone"
           />
         </div>
-        {/* Right side */}
+
         <div className="mt-8">
           <div className="mt-8 min-w-80">
             <CartTotal show={false} />
@@ -265,8 +283,8 @@ const PlaceOrder = () => {
             <div className="w-full text-end mt-8">
               <button
                 type="submit"
-                disabled={cartLoading}
-                className="bg-black text-white px-16 py-3 text-sm"
+                disabled={cartLoading || cartIsLoading}
+                className="bg-black text-white px-16 py-3 text-sm cursor-pointer"
               >
                 {method === "COD" ? "PLACE ORDER" : "PROCEED TO PAYMENT"}
               </button>

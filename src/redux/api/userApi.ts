@@ -55,7 +55,7 @@ export const userApi = createApi({
         method: "PUT",
         body: cartData,
       }),
-      // providesTags: ["users"],
+      // invalidatesTags: ["users"],
     }),
   }),
 });

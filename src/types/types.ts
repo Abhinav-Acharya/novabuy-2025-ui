@@ -63,7 +63,7 @@ export type Order = {
   status: string;
   paymentMethod: string;
   paymentStatus: boolean;
-  orderItems: CartItem[];
+  orderItem: CartItem;
   // subTotal: number;
   // tax: number;
   // shippingCharges: number;

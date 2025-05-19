@@ -17,7 +17,6 @@ import { RootState } from "../types/types";
 import { responseToast } from "../utils/features";
 
 const stripeKey = import.meta.env.VITE_STRIPE_KEY;
-
 const stripePromise = loadStripe(stripeKey);
 
 const CheckOutForm = () => {
@@ -26,21 +25,27 @@ const CheckOutForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
   const { user } = useSelector((state: RootState) => state.userReducer);
 
   const { shippingInfo, cartItems, cartTotal, paymentMethod } = useSelector(
     (state: RootState) => state.cartReducer
   );
 
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-
   const [newOrder, { error: newOrderError, isError }] = useNewOrderMutation();
-
+  
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!stripe || !elements) return;
     setIsProcessing(true);
+
+    if (!user || !user._id) {
+      setIsProcessing(false);
+      toast.error("User information is missing. Please log in again.");
+      return;
+    }
 
     const orderData: NewOrderRequest = {
       shippingInfo: shippingInfo!,
@@ -50,7 +55,7 @@ const CheckOutForm = () => {
       // discount,
       // shippingCharges,
       total: cartTotal,
-      user: user?._id!,
+      user: user._id,
       paymentMethod,
     };
 
@@ -69,7 +74,7 @@ const CheckOutForm = () => {
       const res = await newOrder(orderData);
       if (isError) toast.error((newOrderError as CustomError).data.message);
 
-      dispatch(resetCart());
+      dispatch(resetCart("order"));
       responseToast(res, navigate, "/orders");
     }
     setIsProcessing(false);
@@ -99,10 +104,6 @@ const CheckOutForm = () => {
 const Checkout = () => {
   const location = useLocation();
 
-  const clientSecret: string | undefined = location.state;
-
-  if (!clientSecret) return <Navigate to={"/place-order"} />;
-
   const { user } = useSelector((state: RootState) => state.userReducer);
 
   const { cartItems, loading: cartLoading } = useSelector(
@@ -114,19 +115,30 @@ const Checkout = () => {
     { isError: cartIsError, error: cartError, isLoading: cartIsLoading },
   ] = useUpdateUserCartMutation();
 
-  const updateCartDb = async () => {
-    if (user && cartItems) {
-      await updateUserCart({ userId: user._id, cartItems });
-      console.log("redux to db");
-    }
-    if (cartIsError) toast.error((cartError as CustomError).data.message);
-  };
-
   useEffect(() => {
+    const updateCartDb = async () => {
+      if (user && cartItems) {
+        await updateUserCart({ userId: user._id, cartItems });
+        console.log("redux to db");
+      }
+      if (cartIsError) toast.error((cartError as CustomError).data.message);
+    };
+
     if (cartItems && !cartIsLoading && !cartLoading) {
       updateCartDb();
     }
-  }, [cartItems, user]);
+  }, [
+    cartError,
+    cartIsError,
+    cartIsLoading,
+    cartItems,
+    cartLoading,
+    updateUserCart,
+    user,
+  ]);
+
+  const clientSecret: string | undefined = location.state;
+  if (!clientSecret) return <Navigate to={"/place-order"} />;
 
   return (
     <Elements

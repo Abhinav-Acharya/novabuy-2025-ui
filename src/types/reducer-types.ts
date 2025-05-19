@@ -25,4 +25,5 @@ export interface ICartReducerInitialState {
   cartCount: number;
   shippingInfo: ShippingInfo | null;
   paymentMethod: "Stripe" | "Razorpay" | "COD" | null;
+  source: "db" | "user" | "order" | null;
 }

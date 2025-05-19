@@ -23,7 +23,7 @@ const RelatedProducts = ({ category, subcategory }: Props) => {
 
       setRelated(productsCopy.slice(0, 5));
     }
-  }, [products]);
+  }, [category, products, subcategory]);
 
   return (
     <>
