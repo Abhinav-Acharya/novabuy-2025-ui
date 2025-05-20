@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import toast from "react-hot-toast";
 import { CartItem, ICartReducerInitialState } from "../../types/reducer-types";
 import { Product, ShippingInfo } from "../../types/types";
 
@@ -35,6 +36,10 @@ export const cartReducer = createSlice({
       );
 
       if (existingCartItem) {
+        existingCartItem.image = product.image[0];
+        existingCartItem.name = product.name;
+        existingCartItem.price = product.price;
+        existingCartItem.stock = product.stock;
         existingCartItem.quantity += 1;
       } else {
         state.cartItems.push({
@@ -42,9 +47,12 @@ export const cartReducer = createSlice({
           image: product.image[0],
           name: product.name,
           price: product.price,
+          stock: product.stock,
           size,
           quantity: 1,
         });
+
+        state.source = "user";
       }
 
       state.cartCount = state.cartItems.reduce(
@@ -52,7 +60,6 @@ export const cartReducer = createSlice({
         0
       );
 
-      state.source = "user";
       state.loading = false;
     },
 
@@ -75,7 +82,11 @@ export const cartReducer = createSlice({
       );
 
       if (existingCartItem) {
-        existingCartItem.quantity = quantity;
+        if (quantity <= product.stock) {
+          existingCartItem.quantity = quantity;
+        } else {
+          toast.error(`Only ${product.stock} items available in stock.`);
+        }
       }
 
       state.cartCount = state.cartItems.reduce(
@@ -129,6 +140,10 @@ export const cartReducer = createSlice({
         state.subTotal + state.tax + state.shippingCharges - state.discount;
 
       state.loading = false;
+    },
+
+    applyDiscount: (state, action: PayloadAction<number>) => {
+      state.discount = action.payload;
     },
 
     updateCartFromDb: (state, action) => {
@@ -186,4 +201,5 @@ export const {
   saveShippingInfo,
   setPaymentMethod,
   clearCartSource,
+  applyDiscount,
 } = cartReducer.actions;

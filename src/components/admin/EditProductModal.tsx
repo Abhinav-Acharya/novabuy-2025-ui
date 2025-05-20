@@ -1,4 +1,4 @@
-import { Dialog } from "@headlessui/react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { admin_assets } from "../../assets/admin_assets/assets";
@@ -30,6 +30,7 @@ const EditProductModal = ({
     product.sizes || undefined
   );
   const [previewImages, setPreviewImages] = useState<string[]>(product.image);
+  const [removedImageIndexes, setRemovedImageIndexes] = useState<number[]>([]);
   const [newImages, setNewImages] = useState<(File | null)[]>([
     null,
     null,
@@ -44,6 +45,7 @@ const EditProductModal = ({
     index: number
   ) => {
     const file = e.target.files?.[0];
+
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -86,6 +88,10 @@ const EditProductModal = ({
       if (file) formData.set(`image${i + 1}`, file);
     });
 
+    if (removedImageIndexes.length > 0) {
+      formData.set("removeImages", JSON.stringify(removedImageIndexes));
+    }
+
     try {
       const res = await updateProduct({
         productId: product._id,
@@ -110,31 +116,57 @@ const EditProductModal = ({
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center px-4 backdrop-blur-xs">
-        <Dialog.Panel className="w-full max-w-[50%] max-h-[95%] overflow-y-auto bg-white p-6 rounded-lg shadow-xl">
-          <Dialog.Title className="text-xl font-semibold mb-4 text-center">
+        <DialogPanel className="w-full max-w-[50%] max-h-[95%] overflow-y-auto bg-white p-6 rounded-lg shadow-xl">
+          <DialogTitle className="text-xl font-semibold mb-4 text-center">
             Edit Product
-          </Dialog.Title>
+          </DialogTitle>
 
           <div className="flex gap-2 mb-4 justify-center">
             {[0, 1, 2, 3].map((i) => (
-              <label key={i} htmlFor={`img-${i}`}>
-                <div>
-                  <img
-                    src={previewImages[i] || admin_assets.upload_area}
-                    className="w-20 h-20 object-cover border"
-                    alt=""
-                  />
-                  <input
-                    type="file"
-                    id={`img-${i}`}
-                    accept="image/*"
-                    hidden
-                    onChange={(e) => handleImageChange(e, i)}
-                  />
-                </div>
-              </label>
+              <div key={i} className="relative">
+                <label htmlFor={`img-${i}`}>
+                  <div>
+                    <img
+                      src={previewImages[i] || admin_assets.upload_area}
+                      className="w-20 h-20 object-contain border"
+                      alt=""
+                    />
+                    <input
+                      type="file"
+                      id={`img-${i}`}
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => handleImageChange(e, i)}
+                    />
+                  </div>
+                </label>
+                {previewImages[i] && (
+                  <button
+                    type="button"
+                    className="absolute top-[-10px] right-[-5px] bg-gray-800 rounded-full p-0.5 text-xs cursor-pointer"
+                    onClick={() => {
+                      const previews = [...previewImages];
+                      const updated = [...newImages];
+
+                      if (product.image[i]) {
+                        setRemovedImageIndexes((prev) => [...prev, i]);
+                      }
+
+                      previews[i] = "";
+                      updated[i] = null;
+
+                      setPreviewImages(previews);
+                      setNewImages(updated);
+                    }}
+                    aria-label="Remove image"
+                  >
+                    ❌
+                  </button>
+                )}
+              </div>
             ))}
           </div>
+
           <div className="flex flex-col gap-1 mb-4">
             <p>Name:</p>
             <input
@@ -242,7 +274,6 @@ const EditProductModal = ({
               ))}
             </div>
           </div>
-
           <div className="flex items-center gap-2 mb-4">
             <input
               type="checkbox"
@@ -252,7 +283,6 @@ const EditProductModal = ({
             />
             <label htmlFor="bestseller">Add to bestseller?</label>
           </div>
-
           <div className="flex justify-end gap-3">
             <button
               onClick={onClose}
@@ -268,7 +298,7 @@ const EditProductModal = ({
               {isLoading ? "Updating..." : "Update"}
             </button>
           </div>
-        </Dialog.Panel>
+        </DialogPanel>
       </div>
     </Dialog>
   );

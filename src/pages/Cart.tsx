@@ -164,6 +164,7 @@ const Cart = () => {
                     <input
                       className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
                       disabled={cartIsLoading || cartLoading}
+                      max={item.stock}
                       onChange={(e) =>
                         handleCartAction(
                           "update",

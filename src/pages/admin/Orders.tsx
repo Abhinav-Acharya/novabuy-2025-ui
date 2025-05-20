@@ -11,6 +11,7 @@ import {
 } from "../../redux/api/orderApi";
 import { CustomError } from "../../types/api-types";
 import { Order, RootState } from "../../types/types";
+import { SearchX } from "lucide-react";
 
 const Orders = () => {
   const { currency } = useShopContext();
@@ -79,85 +80,91 @@ const Orders = () => {
     <>
       <div>
         <p className="mb-6 text-2xl text-center">All Orders</p>
-
-        <div>
-          {allOrdersData?.orders.map((order, index) => (
-            <div
-              className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2.5fr_1.3fr_0.5fr_1fr] gap-3 items-center border-2 border-gray-200 p-4 md:p-3 my-3 md:my-4 text-xs sm:text-sm text-gray-800"
-              key={index}
-            >
-              <img className="w-12" src={admin_assets.parcel_icon} alt="" />
-              <div>
-                <div className="flex flex-col gap-2">
-                  <p className="text-gray-600">Order ID - {order._id}</p>
-                  <div>
-                    {
-                      <p className="py-0.5" key={index}>
-                        {order.orderItem.name} x {order.orderItem.quantity}{" "}
-                        <span> ("{order.orderItem.size}") </span>
-                      </p>
-                    }
-                  </div>
-                </div>
-                <p className="mt-3 mb-2 font-medium">
-                  {order.shippingInfo?.firstName +
-                    " " +
-                    order.shippingInfo?.lastName}
-                </p>
+        {allOrdersData?.orders.length === 0 ? (
+          <div className="flex gap-3 items-center justify-center mt-[150px] p-8">
+            <SearchX className="h-6 w-6" />
+            <div className="text-xl">No orders placed yet.</div>
+          </div>
+        ) : (
+          <div>
+            {allOrdersData?.orders.map((order, index) => (
+              <div
+                className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2.5fr_1.3fr_0.5fr_1fr] gap-3 items-center border-2 border-gray-200 p-4 md:p-3 my-3 md:my-4 text-xs sm:text-sm text-gray-800"
+                key={index}
+              >
+                <img className="w-12" src={admin_assets.parcel_icon} alt="" />
                 <div>
-                  <p>{order.shippingInfo?.street + ","}</p>
-                  <p>
-                    {order.shippingInfo?.city +
-                      ", " +
-                      order.shippingInfo?.state +
-                      ", " +
-                      order.shippingInfo?.country +
-                      ", " +
-                      order.shippingInfo?.pincode}
+                  <div className="flex flex-col gap-2">
+                    <p className="text-gray-600">Order ID - {order._id}</p>
+                    <div>
+                      {
+                        <p className="py-0.5" key={index}>
+                          {order.orderItem.name} x {order.orderItem.quantity}{" "}
+                          <span> ("{order.orderItem.size}") </span>
+                        </p>
+                      }
+                    </div>
+                  </div>
+                  <p className="mt-3 mb-2 font-medium">
+                    {order.shippingInfo?.firstName +
+                      " " +
+                      order.shippingInfo?.lastName}
+                  </p>
+                  <div>
+                    <p>{order.shippingInfo?.street + ","}</p>
+                    <p>
+                      {order.shippingInfo?.city +
+                        ", " +
+                        order.shippingInfo?.state +
+                        ", " +
+                        order.shippingInfo?.country +
+                        ", " +
+                        order.shippingInfo?.pincode}
+                    </p>
+                  </div>
+                  <p>{order.shippingInfo?.phone}</p>
+                </div>
+                <div>
+                  <p className="text-sm sm:text-[15px]">
+                    Items: {order.orderItem.quantity}
+                  </p>
+                  <p className="mt-3">Payment Method: {order.paymentMethod}</p>
+                  <p className="mt-1">
+                    Payment: {order.paymentStatus ? "Done" : "Pending"}
+                  </p>
+                  <p className="mt-1">
+                    Date: {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <p>{order.shippingInfo?.phone}</p>
-              </div>
-              <div>
                 <p className="text-sm sm:text-[15px]">
-                  Items: {order.orderItem.quantity}
+                  {currency}
+                  {order.total}
                 </p>
-                <p className="mt-3">Payment Method: {order.paymentMethod}</p>
-                <p className="mt-1">
-                  Payment: {order.paymentStatus ? "Done" : "Pending"}
-                </p>
-                <p className="mt-1">
-                  Date: {new Date(order.createdAt).toLocaleDateString()}
-                </p>
+                <div className="flex flex-col gap-y-3">
+                  <select
+                    onChange={(e) => statusHandler(e, order._id!)}
+                    value={order.status}
+                    className="p-2 font-semibold"
+                    disabled={orderStatusLoading}
+                  >
+                    {/* change later - check with database response */}
+                    <option value="Order Placed">Order Placed</option>
+                    <option value="Packing">Packing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Out for delivery">Out for delivery</option>
+                    <option value="Delivered">Delivered</option>
+                  </select>
+                  <button
+                    onClick={() => deleteHandler(order._id)}
+                    className="inline-block w-full py-2 px-3 text-center font-semibold leading-6 text-blue-50 bg-red-500 hover:bg-red-600 rounded-lg transition duration-200"
+                  >
+                    Delete Order
+                  </button>
+                </div>
               </div>
-              <p className="text-sm sm:text-[15px]">
-                {currency}
-                {order.total}
-              </p>
-              <div className="flex flex-col gap-y-3">
-                <select
-                  onChange={(e) => statusHandler(e, order._id!)}
-                  value={order.status}
-                  className="p-2 font-semibold"
-                  disabled={orderStatusLoading}
-                >
-                  {/* change later - check with database response */}
-                  <option value="Order Placed">Order Placed</option>
-                  <option value="Packing">Packing</option>
-                  <option value="Shipped">Shipped</option>
-                  <option value="Out for delivery">Out for delivery</option>
-                  <option value="Delivered">Delivered</option>
-                </select>
-                <button
-                  onClick={() => deleteHandler(order._id)}
-                  className="inline-block w-full py-2 px-3 text-center font-semibold leading-6 text-blue-50 bg-red-500 hover:bg-red-600 rounded-lg transition duration-200"
-                >
-                  Delete Order
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
       {deletingOrderId && (
         <DeleteOrderModal

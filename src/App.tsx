@@ -26,6 +26,7 @@ import { userExist, userNotExist } from "./redux/reducers/userReducer";
 import { CustomError } from "./types/api-types";
 import { RootState } from "./types/types";
 import { auth } from "./utils/firebase";
+import Coupons from "./pages/admin/Coupons";
 
 const App = () => {
   const location = useLocation();
@@ -91,10 +92,7 @@ const App = () => {
             <Route path="/collections" element={<Collection />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route
-              path="/product/:productId"
-              element={<ProductPage user={user} />}
-            />
+            <Route path="/product/:productId" element={<ProductPage />} />
             <Route path="/cart" element={<Cart />} />
 
             <Route
@@ -142,6 +140,7 @@ const App = () => {
                     <Route path="/admin/list" element={<List />} />
                     <Route path="/admin/orders" element={<Orders_admin />} />
                     <Route path="/admin/users" element={<Users />} />
+                    <Route path="/admin/coupons" element={<Coupons />} />
                   </Route>
                 </Routes>
               </div>

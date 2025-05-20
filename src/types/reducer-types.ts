@@ -12,6 +12,7 @@ export type CartItem = {
   price: number;
   size?: string;
   quantity: number;
+  stock: number;
 };
 
 export interface ICartReducerInitialState {

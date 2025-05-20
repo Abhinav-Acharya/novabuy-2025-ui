@@ -26,7 +26,7 @@ const DeleteOrderModal = ({
   const handleDelete = async () => {
     try {
       const res = await deleteOrder({
-        userId: userId ? userId : "",
+        userId: userId ?? "",
         orderId,
       });
 
@@ -37,7 +37,7 @@ const DeleteOrderModal = ({
       if (err instanceof Error && err.message) {
         toast.error(err.message);
       } else {
-        toast.error("Error deleteing order");
+        toast.error("Error deleting order");
       }
     } finally {
       onClose();

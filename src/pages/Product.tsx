@@ -11,9 +11,9 @@ import { useProductDetailsQuery } from "../redux/api/productApi";
 import { useUpdateUserCartMutation } from "../redux/api/userApi";
 import { addToCart, clearCartSource } from "../redux/reducers/cartReducer";
 import { CustomError } from "../types/api-types";
-import type { IHeaderPropsType, Product, RootState } from "../types/types";
+import type { Product, RootState } from "../types/types";
 
-const ProductPage = ({ user }: IHeaderPropsType) => {
+const ProductPage = () => {
   const dispatch = useDispatch();
   const { productId } = useParams();
   const { currency } = useShopContext();
@@ -21,6 +21,9 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
   const [product, setProduct] = useState<Product | undefined>(undefined);
+  const [stockAvailable, setStockAvailable] = useState<boolean | null>(null);
+
+  const { user } = useSelector((state: RootState) => state.userReducer);
 
   const {
     cartItems,
@@ -28,8 +31,16 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
     source,
   } = useSelector((state: RootState) => state.cartReducer);
 
-  const { data: productData, isLoading: productIsLoading } =
-    useProductDetailsQuery(productId as string);
+  const {
+    data: productData,
+    error: productError,
+    isError: productIsError,
+    isLoading: productIsLoading,
+  } = useProductDetailsQuery(productId as string);
+
+  if (productIsError) {
+    toast.error((productError as CustomError).data.message);
+  }
 
   const [
     updateUserCart,
@@ -39,24 +50,37 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
   // console.log(cartItems);
 
   useEffect(() => {
+    const existingCartItem = cartItems?.find(
+      (item) => item._id === productData?.product._id
+    );
+
+    if (existingCartItem) {
+      setStockAvailable(
+        existingCartItem.quantity < (productData?.product.stock ?? 0)
+      );
+    } else {
+      setStockAvailable(
+        productData?.product.stock && productData?.product.stock > 0
+          ? true
+          : false
+      );
+    }
+
     if (productData) {
       setProduct(productData?.product);
       // console.log(productData?.product);
     }
-  }, [productData]);
+  }, [productData, cartItems]);
 
   const addToCartHandler = (product: Product, size?: string) => {
-    if (product.stock < 1) {
-      toast.error("Product is not in stock. Please check later.");
-      return;
-    }
-
     if (product.sizes && product.sizes.length > 0 && !size) {
       toast.error("Please select a size");
       return;
     }
+
     dispatch(addToCart({ product, size }));
-    if (!cartLoading) toast.success("Product added to cart");
+
+    if (!cartLoading && source !== null) toast.success("Product added to cart");
   };
 
   useEffect(() => {
@@ -146,11 +170,11 @@ const ProductPage = ({ user }: IHeaderPropsType) => {
                 </div>
               </div>
               <button
-                disabled={cartIsLoading || cartLoading}
+                disabled={cartIsLoading || cartLoading || !stockAvailable}
                 onClick={() => addToCartHandler(product, size)}
                 className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
               >
-                ADD TO CART
+                {!stockAvailable ? "OUT OF STOCK" : "ADD TO CART"}
               </button>
               <hr className="mt-8 sm:w-4/5" />
               <div className="text-sm text-gray-500 mt-5 flex flex-col gap--1">
