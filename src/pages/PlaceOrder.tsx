@@ -49,7 +49,7 @@ const PlaceOrder = () => {
     null
   );
 
-  const [newOrder] = useNewOrderMutation();
+  const [newOrder, { error, isError, isLoading }] = useNewOrderMutation();
 
   const initialFormData: ShippingInfo = {
     city: "",
@@ -112,8 +112,8 @@ const PlaceOrder = () => {
               await updateCartInDb();
               responseToast(res, navigate, "/orders");
             }
-          } catch (error) {
-            console.log(error);
+          } catch (err) {
+            console.error(error);
           }
 
           break;
@@ -144,7 +144,7 @@ const PlaceOrder = () => {
               state: data.clientSecret,
             });
           } catch (error) {
-            console.log(error);
+            console.error(error);
             toast.error("Something went wrong");
           }
 
@@ -160,7 +160,7 @@ const PlaceOrder = () => {
           break;
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

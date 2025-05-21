@@ -1,15 +1,15 @@
+import { SearchX } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { useSelector } from "react-redux";
-import DeleteProductModal from "../../components/admin/DeleteProductModal";
+import DeleteModal from "../../components/admin/DeleteModal";
 import EditProductModal from "../../components/admin/EditProductModal";
 import { LoadingText } from "../../components/Loaders";
 import { useShopContext } from "../../context/ShopContext";
 import { useAllProductsQuery } from "../../redux/api/productApi";
 import { CustomError } from "../../types/api-types";
 import { Product, RootState } from "../../types/types";
-import { SearchX } from "lucide-react";
 
 const List = () => {
   const { user } = useSelector((state: RootState) => state.userReducer);
@@ -52,7 +52,9 @@ const List = () => {
   ) : (
     <>
       <p className="mb-6 text-2xl text-center">All Products</p>
-      {list.length === 0 ? (
+      <hr />
+
+      {list.length <= 0 ? (
         <div className="flex gap-3 items-center justify-center mt-[150px] p-8">
           <SearchX className="h-6 w-6" />
           <div className="text-xl">No products added.</div>
@@ -120,7 +122,7 @@ const List = () => {
         />
       )}
       {deletingProductId && (
-        <DeleteProductModal
+        <DeleteModal
           isOpen={deleteModalOpen}
           userId={user?._id || ""}
           onClose={() => {
@@ -128,7 +130,8 @@ const List = () => {
             setDeletingProductId(null);
             refetch(); // refetch product list after editing
           }}
-          productId={deletingProductId}
+          type="product"
+          id={deletingProductId}
         />
       )}
     </>

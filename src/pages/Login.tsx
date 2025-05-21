@@ -8,10 +8,6 @@ import { auth } from "../utils/firebase";
 import toast from "react-hot-toast";
 
 const Login = () => {
-  const [currentState, setCurrentState] = useState<"Sign up" | "Login">(
-    "Login"
-  );
-
   const [gender, setGender] = useState<"male" | "female">("male");
   const [dob, setDob] = useState("17-Nov-1999");
 
@@ -28,6 +24,8 @@ const Login = () => {
 
       const { user } = await signInWithPopup(auth, provider);
 
+      // console.log(user);
+
       const res = await login({
         name: user.displayName!,
         email: user.email!,
@@ -38,15 +36,19 @@ const Login = () => {
       });
 
       if ("data" in res) {
-        toast.success(res.data?.message!);
+        if (res.data?.message) {
+          toast.success(res.data.message);
+        } else {
+          toast.success("Login successful!");
+        }
         navigate("/");
       } else {
         const error = res.error as FetchBaseQueryError;
         const message = (error.data as MessageResponse).message;
-        console.log(message);
+        console.error(message);
       }
     } catch (error) {
-      console.log("Sign in failed");
+      console.error("Sign in failed", error);
     }
   };
 
@@ -54,22 +56,22 @@ const Login = () => {
     <>
       <form className="flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800">
         <div className="inline-flex items-center gap-2 mb-2 mt-10">
-          <p className="prata-regular text-xl">{currentState}</p>
+          <p className="prata-regular text-xl">Login/Sign Up</p>
           <hr className="border-none h-[1.5px] w-8 bg-gray-800" />
         </div>
-        {currentState === "Login" ? (
+        {/* {currentState === "Login" ? (
           ""
         ) : (
           <>
-            {/* <input
+            <input
               onChange={(e) => setName(e.target.value)}
               type="text"
               className="w-full px-3 py-2 border border-gray-800"
               placeholder="Name"
               required
-            /> */}
+            />
           </>
-        )}
+        )} */}
         <input
           onChange={(e) =>
             setGender(e.target.value.toLowerCase() as typeof gender)

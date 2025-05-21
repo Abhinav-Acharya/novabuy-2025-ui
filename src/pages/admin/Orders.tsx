@@ -1,8 +1,9 @@
+import { SearchX } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { admin_assets } from "../../assets/admin_assets/assets";
-import DeleteOrderModal from "../../components/admin/DeleteOrderModal";
+import DeleteModal from "../../components/admin/DeleteModal";
 import { LoadingText } from "../../components/Loaders";
 import { useShopContext } from "../../context/ShopContext";
 import {
@@ -11,7 +12,6 @@ import {
 } from "../../redux/api/orderApi";
 import { CustomError } from "../../types/api-types";
 import { Order, RootState } from "../../types/types";
-import { SearchX } from "lucide-react";
 
 const Orders = () => {
   const { currency } = useShopContext();
@@ -80,14 +80,16 @@ const Orders = () => {
     <>
       <div>
         <p className="mb-6 text-2xl text-center">All Orders</p>
-        {allOrdersData?.orders.length === 0 ? (
+        <hr />
+
+        {!allOrdersData?.orders || allOrdersData.orders.length === 0 ? (
           <div className="flex gap-3 items-center justify-center mt-[150px] p-8">
             <SearchX className="h-6 w-6" />
             <div className="text-xl">No orders placed yet.</div>
           </div>
         ) : (
           <div>
-            {allOrdersData?.orders.map((order, index) => (
+            {allOrdersData.orders.map((order, index) => (
               <div
                 className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2.5fr_1.3fr_0.5fr_1fr] gap-3 items-center border-2 border-gray-200 p-4 md:p-3 my-3 md:my-4 text-xs sm:text-sm text-gray-800"
                 key={index}
@@ -167,14 +169,15 @@ const Orders = () => {
         )}
       </div>
       {deletingOrderId && (
-        <DeleteOrderModal
+        <DeleteModal
           isOpen={deleteModalOpen}
           userId={user?._id || ""}
           onClose={() => {
             setDeleteModalOpen(false);
             setDeletingOrderId(null);
           }}
-          orderId={deletingOrderId}
+          type="order"
+          id={deletingOrderId}
         />
       )}
     </>

@@ -67,7 +67,7 @@ const App = () => {
       toast.error((cartError as CustomError).data.message);
     } else if (cartData?.success && user && !cartIsLoading) {
       dispatch(updateCartFromDb(cartData.cartData));
-      console.log("db to redux");
+      // console.log("db to redux");
     }
     // eslint-disable-next-line
   }, [cartData, user, cartIsLoading, dispatch]);

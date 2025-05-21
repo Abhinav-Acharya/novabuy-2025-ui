@@ -119,7 +119,7 @@ const Checkout = () => {
     const updateCartDb = async () => {
       if (user && cartItems) {
         await updateUserCart({ userId: user._id, cartItems });
-        console.log("redux to db");
+        // console.log("redux to db");
       }
       if (cartIsError) toast.error((cartError as CustomError).data.message);
     };

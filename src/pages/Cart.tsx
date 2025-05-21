@@ -83,7 +83,7 @@ const Cart = () => {
     const updateCartInDb = async () => {
       if (user && cartItems) {
         await updateUserCart({ userId: user._id, cartItems });
-        console.log("redux to db in cart page");
+        // console.log("redux to db in cart page");
         dispatch(clearCartSource());
       }
 

@@ -20,8 +20,8 @@ export const responseToast = (
   }
 };
 
-export const formatDate = (orderDate: Date) => {
-  const date = new Date(orderDate);
+export const formatDate = (inputDate: Date) => {
+  const date = new Date(inputDate);
   const day = date.getDate();
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();

@@ -25,6 +25,7 @@ const Hero = () => {
           src={frontend_assets.hero_img}
           className="w-[50%] sm:w-1/2"
           alt=""
+          // onClick={() => toast.error("Image clicked")}
         />
         {/* change later - image */}
       </div>

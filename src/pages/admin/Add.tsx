@@ -114,7 +114,7 @@ const Add = () => {
         navigate("/admin/list");
       }
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
     }
   };
 

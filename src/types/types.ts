@@ -90,6 +90,14 @@ export type OrderItemResponse = {
   items?: CartItem[];
 };
 
+export type Coupon = {
+  _id: string;
+  code: string;
+  amount: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type OrderResponse = OrderItemResponse[];
 
 export type ResType =

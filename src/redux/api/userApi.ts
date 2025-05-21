@@ -68,7 +68,7 @@ export const getUser = async (id: string) => {
 
     return data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

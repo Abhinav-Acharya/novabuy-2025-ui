@@ -89,7 +89,7 @@ const ProductPage = () => {
     const updateCartInDb = async () => {
       if (user && cartItems && cartItems.length > 0) {
         await updateUserCart({ userId: user._id, cartItems });
-        console.log("redux to db in product page");
+        // console.log("redux to db in product page");
         dispatch(clearCartSource());
       }
       if (cartIsError) {
