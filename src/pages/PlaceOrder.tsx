@@ -49,7 +49,7 @@ const PlaceOrder = () => {
     null
   );
 
-  const [newOrder, { error, isError, isLoading }] = useNewOrderMutation();
+  const [newOrder, { isLoading: newOrderIsLoading }] = useNewOrderMutation();
 
   const initialFormData: ShippingInfo = {
     city: "",
@@ -113,7 +113,7 @@ const PlaceOrder = () => {
               responseToast(res, navigate, "/orders");
             }
           } catch (err) {
-            console.error(error);
+            console.error(err);
           }
 
           break;
@@ -283,10 +283,14 @@ const PlaceOrder = () => {
             <div className="w-full text-end mt-8">
               <button
                 type="submit"
-                disabled={cartLoading || cartIsLoading}
+                disabled={cartLoading || cartIsLoading || newOrderIsLoading}
                 className="bg-black text-white px-16 py-3 text-sm cursor-pointer"
               >
-                {method === "COD" ? "PLACE ORDER" : "PROCEED TO PAYMENT"}
+                {method === "COD"
+                  ? newOrderIsLoading
+                    ? "PLACING ORDER"
+                    : "PLACE ORDER"
+                  : "PROCEED TO PAYMENT"}
               </button>
             </div>
           </div>
