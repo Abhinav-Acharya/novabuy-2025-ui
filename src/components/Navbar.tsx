@@ -18,6 +18,7 @@ const Navbar = ({ user }: IHeaderPropsType) => {
       await signOut(auth);
       toast.success("Signed out successfully");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to sign out");
     }
   };
@@ -33,9 +34,9 @@ const Navbar = ({ user }: IHeaderPropsType) => {
 
   return (
     <>
-      <div className="flex items-center justify-between py-5 font-medium">
+      <div className="flex items-center justify-between py-4 font-medium">
         <Link to={"/"}>
-          <img src={frontend_assets.logo} className="w-36" alt="" />
+          <img src={frontend_assets.logo} className="w-auto h-10" alt="" />
         </Link>
 
         <ul className=" sm:flex gap-5 text-sm text-gray-700 hidden">

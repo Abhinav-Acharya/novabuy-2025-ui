@@ -8,12 +8,12 @@ const Newsletter = ({ percent = 20 }: Props) => {
   };
 
   return (
-    <div className="text-center">
+    <div className="text-center my-5">
       <p className="text-2xl font-medium text-gray-800">
         Subscribe now & get {percent}% off
       </p>
-      <p className="text-gray-400 mt-3">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit
+      <p className="text-gray-400 mt-2">
+        Enter your email to get the latest updates and offers.
       </p>
       <form
         onSubmit={onSubmitHandler}

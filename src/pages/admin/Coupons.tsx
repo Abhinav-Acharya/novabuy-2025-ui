@@ -64,15 +64,14 @@ const Coupons = () => {
         <p className="text-2xl text-center">All Coupons</p>
         <button className="absolute right-0">
           <PlusCircle
-            color="red"
-            className="bg-gray-400 rounded-full w-8 h-8 cursor-pointer"
+            className="w-8 h-8 cursor-pointer"
             onClick={() => {
               setAddModalOpen(true);
             }}
           />
         </button>
       </div>
-      <hr/>
+      <hr />
       {coupons.length <= 0 ? (
         <div className="flex gap-3 items-center justify-center mt-[150px] p-8">
           <SearchX className="h-6 w-6" />

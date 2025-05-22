@@ -25,11 +25,11 @@ const BestSeller = () => {
 
   return (
     <>
-      <div className="my-10 ">
+      <div className="my-6">
         <div className="text-center py-8 text-3xl">
           <Title text1="BEST" text2="SELLERS" />
           <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+            Loved by many, these picks never go out of style.
           </p>
         </div>
 

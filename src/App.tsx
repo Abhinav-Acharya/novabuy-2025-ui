@@ -20,13 +20,13 @@ import {
   ProductPage,
 } from "./pages";
 import { Add, List, Orders_admin, Users } from "./pages/admin";
+import Coupons from "./pages/admin/Coupons";
 import { getUser, useGetUserCartQuery } from "./redux/api/userApi";
 import { updateCartFromDb } from "./redux/reducers/cartReducer";
 import { userExist, userNotExist } from "./redux/reducers/userReducer";
 import { CustomError } from "./types/api-types";
 import { RootState } from "./types/types";
 import { auth } from "./utils/firebase";
-import Coupons from "./pages/admin/Coupons";
 
 const App = () => {
   const location = useLocation();
@@ -50,7 +50,9 @@ const App = () => {
       if (firebaseUser) {
         try {
           const data = await getUser(firebaseUser.uid);
-          if (data) dispatch(userExist(data.user));
+          if (data) {
+            dispatch(userExist(data.user));
+          }
         } catch (error) {
           console.error("Error fetching user:", error);
         }

@@ -21,8 +21,8 @@ const Contact = () => {
             Hic, nobis quas. Ipsam quo pariatur eaque.
           </p>
           <p className="text-gray-500">
-            Tel: 010999494902 <br />
-            Email - contact@novabuy.com
+            Mob: +919867531602 <br />
+            Email - abhiacharya1799@gmail.com
           </p>
           <p className="font-semibold text-xl text-gray-600">
             Careers at Novabuy

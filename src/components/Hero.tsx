@@ -23,7 +23,7 @@ const Hero = () => {
         </div>
         <img
           src={frontend_assets.hero_img}
-          className="w-[50%] sm:w-1/2"
+          className="w-[50%] sm:w-1/2 h-[500px] object-contain"
           alt=""
           // onClick={() => toast.error("Image clicked")}
         />

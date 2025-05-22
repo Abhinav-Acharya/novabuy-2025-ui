@@ -113,7 +113,7 @@ const CartTotal = ({ show }: { show: boolean }) => {
               />
               <button
                 disabled={isLoading}
-                className="border-1 border-gray-800 rounded w-[30%] text-center bg-gray-300 px-2"
+                className="border-1 border-gray-800 rounded w-[30%] text-center bg-gray-200 px-2"
                 onClick={() => handleCheckCoupon(couponCode)}
               >
                 Apply
