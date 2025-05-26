@@ -4,9 +4,16 @@ import toast, { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes, useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { Footer, Navbar, ScreenLoader, SearchBar } from "./components";
-import { Navbar_admin, Sidebar_admin } from "./components/admin";
-import ProtectedRoute from "./components/protected-route";
+import {
+  Footer,
+  Navbar,
+  Navbar_admin,
+  ProtectedRoute,
+  ScreenLoader,
+  ScrollToTop,
+  SearchBar,
+  Sidebar_admin,
+} from "./components";
 import {
   About,
   Cart,
@@ -82,6 +89,7 @@ const App = () => {
     <>
       {!isAdmin ? (
         <div className="px-4 sm:px-[5vw] md:px-[5vw] lg:px-[6vw] ecommerce">
+          <ScrollToTop />
           {/* <ToastContainer position="top-right" /> */}
           <Navbar user={user} />
           <Toaster
@@ -120,7 +128,7 @@ const App = () => {
         <div className="bg-gray-50 min-h-screen admin">
           <>
             <Toaster
-              position="top-center"
+              position="bottom-right"
               toastOptions={{ style: { fontSize: "18px" }, duration: 2500 }}
             />
             <Navbar_admin />

@@ -1,39 +1,36 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { LoadingText } from "../../components/Loaders";
 import {
   useAllUsersQuery,
-  useDeleteUserMutation,
   useUpdateUserMutation,
 } from "../../redux/api/userApi";
 import { CustomError } from "../../types/api-types";
 import { RootState, User } from "../../types/types";
 import { responseToast } from "../../utils/features";
-import { MdDeleteForever, MdEdit } from "react-icons/md";
+import DeleteModal from "../../components/admin/DeleteModal";
 
 const Users = () => {
-  const { user } = useSelector((state: RootState) => state.userReducer);
+  const { user: loggedInUser } = useSelector(
+    (state: RootState) => state.userReducer
+  );
 
   const [list, setList] = useState<User[]>([]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState<User["_id"] | null>(
+    null
+  );
 
   const {
     data: allUsersData,
     isError: allUsersIsError,
     error: allUsersError,
     isLoading: allUsersIsLoading,
-  } = useAllUsersQuery(user?._id || "");
+  } = useAllUsersQuery(loggedInUser?._id || "");
 
   if (allUsersIsError) toast.error((allUsersError as CustomError).data.message);
-
-  const [
-    deleteUser,
-    {
-      isError: deleteUserIsError,
-      error: deleteUserError,
-      isLoading: deleteUserIsLoading,
-    },
-  ] = useDeleteUserMutation();
 
   const [
     updateUser,
@@ -45,21 +42,20 @@ const Users = () => {
   ] = useUpdateUserMutation();
 
   const deleteHandler = async (userId: string) => {
-    const res = await deleteUser({ userId, adminUserId: user?._id || "" });
-
-    if (deleteUserIsError)
-      toast.error((deleteUserError as CustomError).data.message);
-
-    responseToast(res, null, "");
+    setDeletingUserId(userId);
+    setDeleteModalOpen(true);
   };
 
   const updateHandler = async (userId: string) => {
-    const res = await updateUser({ userId, adminUserId: user?._id || "" });
+    const res = await updateUser({
+      userId,
+      adminUserId: loggedInUser?._id || "",
+    });
 
     if (userUpdateIsError)
       toast.error((userUpdateError as CustomError).data.message);
 
-    responseToast(res, null, "");
+    responseToast(res);
   };
 
   useEffect(() => {
@@ -121,7 +117,7 @@ const Users = () => {
               <button
                 onClick={() => deleteHandler(user._id)}
                 className="cursor-pointer right-0"
-                disabled={deleteUserIsLoading}
+                hidden={loggedInUser?._id === user._id}
               >
                 <MdDeleteForever size={26} color="red" />
               </button>
@@ -129,6 +125,18 @@ const Users = () => {
           </div>
         ))}
       </div>
+      {deletingUserId && (
+        <DeleteModal
+          isOpen={deleteModalOpen}
+          userId={loggedInUser?._id || ""}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setDeletingUserId(null);
+          }}
+          type="user"
+          id={deletingUserId}
+        />
+      )}
     </>
   );
 };

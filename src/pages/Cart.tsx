@@ -192,7 +192,7 @@ const Cart = () => {
             </div>
 
             <div>
-              <CartTotal show={true} />
+              <CartTotal show={true} currentPage={"cart"} />
               <div className="w-full flex justify-center">
                 <button
                   onClick={checkoutHandler}

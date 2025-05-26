@@ -39,7 +39,7 @@ const Navbar = ({ user }: IHeaderPropsType) => {
           <img src={frontend_assets.logo} className="w-auto h-10" alt="" />
         </Link>
 
-        <ul className=" sm:flex gap-5 text-sm text-gray-700 hidden">
+        <ul className=" sm:flex gap-4 text-sm text-gray-700 hidden">
           <NavLink to="/" className="flex flex-col items-center gap-1">
             <p>HOME</p>
             <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden" />

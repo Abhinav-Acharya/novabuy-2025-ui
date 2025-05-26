@@ -62,7 +62,7 @@ const List = () => {
       ) : (
         <div className="flex flex-col gap-2">
           {/* list table title */}
-          <div className="hidden md:grid grid-cols-[0.5fr_3.5fr_1.5fr_0.8fr_0.8fr_1.3fr] items-center py-1 px-2 border bg-gray-100 text-sm">
+          <div className="hidden md:grid grid-cols-[1fr_2.5fr_1.5fr_0.8fr_0.8fr_1.3fr] items-center py-1 px-2 border bg-gray-100 text-sm">
             <b className="text-center text-[16px]">Image</b>
             <b className="text-center text-[16px]">Name</b>
             <b className="text-center text-[16px]">Category</b>
@@ -73,11 +73,11 @@ const List = () => {
           {/* Product list */}
           {list.map((item, index) => (
             <div
-              className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[0.5fr_3.5fr_1.5fr_0.8fr_0.8fr_1.3fr] items-center gap-2 py-1 px-2 border text-sm"
+              className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_2.5fr_1.5fr_0.8fr_0.8fr_1.3fr] items-center gap-2 py-1 px-2 border text-sm"
               key={index}
             >
               <img
-                className="w-12 cursor-pointer block mx-auto"
+                className="w-auto h-20 object-cover cursor-pointer block mx-auto"
                 src={item.image[0]}
                 alt=""
                 onClick={() => navigate(`/product/${item._id}`)}

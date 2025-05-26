@@ -7,11 +7,13 @@ const Footer = () => {
       <div>
         <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-6 mt-30 text-sm">
           <div>
-            <img
-              src={frontend_assets.logo}
-              className="mb-5 w-fauto h-10"
-              alt=""
-            />
+            <div className="w-full md:w-2/3">
+              <img
+                src={frontend_assets.logo}
+                className="mb-5 w-auto h-10 mx-auto"
+                alt=""
+              />
+            </div>
             <p className="w-full md:w-2/3 text-gray-600">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
               veniam dolore voluptas odit asperiores tempore dolores et,

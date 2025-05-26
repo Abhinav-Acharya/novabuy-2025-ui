@@ -110,20 +110,20 @@ const ProductPage = () => {
         <div className="border-t border-gray-950/20 pt-10 transition-opacity ease-in duration-500 opacity-100">
           <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
             {/* Product images */}
-            <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
+            <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row h-[90%]">
               <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%]">
                 {product.image?.map((item, index) => (
                   <img
                     src={item}
                     onClick={() => setImage(item)}
                     key={index}
-                    className="w-[24%] sm:w-full sm:mb-3 shrink-0 cursor-pointer"
+                    className="w-[24%] h-[25%] sm:w-full sm:mb-3 shrink-0 cursor-pointer object-contain"
                   ></img>
                 ))}
               </div>
               <div className="w-full sm:w-[80%]">
                 <img
-                  className="w-full h-auto"
+                  className="w-full h-[80vh] max-h-[500px] object-contain"
                   src={image ? image : product.image[0]}
                   alt=""
                 />

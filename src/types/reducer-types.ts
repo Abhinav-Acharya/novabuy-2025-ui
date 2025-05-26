@@ -22,6 +22,7 @@ export interface ICartReducerInitialState {
   tax: number;
   shippingCharges: number;
   discount: number;
+  coupon: string | undefined;
   cartTotal: number;
   cartCount: number;
   shippingInfo: ShippingInfo | null;

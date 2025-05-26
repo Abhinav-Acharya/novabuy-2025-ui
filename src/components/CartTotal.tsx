@@ -4,12 +4,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { Title } from ".";
 import { useShopContext } from "../context/ShopContext";
 import { useLazyGetDiscountAmountQuery } from "../redux/api/couponApi";
-import { applyDiscount, getCartValue } from "../redux/reducers/cartReducer";
-import { CustomError } from "../types/api-types";
+import {
+  applyDiscount,
+  getCartValue,
+  saveCoupon,
+} from "../redux/reducers/cartReducer";
 import { RootState } from "../types/types";
 import { LoadingText } from "./Loaders";
 
-const CartTotal = ({ show }: { show: boolean }) => {
+const CartTotal = ({
+  show,
+  currentPage,
+}: {
+  show: boolean;
+  currentPage: string;
+}) => {
   const { currency } = useShopContext();
 
   const dispatch = useDispatch();
@@ -26,24 +35,22 @@ const CartTotal = ({ show }: { show: boolean }) => {
     subTotal,
   } = useSelector((state: RootState) => state.cartReducer);
 
-  const [getDiscountAmount, { isError, error, isLoading }] =
-    useLazyGetDiscountAmountQuery();
+  const [getDiscountAmount, { isLoading }] = useLazyGetDiscountAmountQuery();
 
   const handleCheckCoupon = async (code: string) => {
-    const res = await getDiscountAmount(code).unwrap();
+    const { isError, isSuccess, data } = await getDiscountAmount(code);
 
     if (isError) {
-      toast.error((error as CustomError).data.message);
+      toast.error("Invalid coupon code");
       dispatch(applyDiscount(0));
       dispatch(getCartValue());
     }
 
-    if (res.success) {
-      toast.success(
-        `Coupon ${code} applied successfully. You got ₹${res.discount} off!!`
-      );
-      dispatch(applyDiscount(res.discount));
+    if (isSuccess && data.success) {
+      toast.success(`You got ₹${data.discount} off !!`);
+      dispatch(applyDiscount(data.discount));
       dispatch(getCartValue());
+      dispatch(saveCoupon(couponCode));
     }
   };
 
@@ -82,7 +89,7 @@ const CartTotal = ({ show }: { show: boolean }) => {
           {show && subTotal < 5000 ? (
             <p>
               (Add items worth {currency}
-              {(5000 - subTotal).toFixed(2)} more to get free shipping)
+              {(5000 - subTotal).toFixed(2)} or more to get free shipping)
             </p>
           ) : null}
           <hr />
@@ -95,7 +102,7 @@ const CartTotal = ({ show }: { show: boolean }) => {
           </div>
           <hr />
           {/* change later */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2" hidden={currentPage === "cart"}>
             <div className="flex justify-between">
               <p>Discount</p>
               <p>
@@ -113,14 +120,15 @@ const CartTotal = ({ show }: { show: boolean }) => {
               />
               <button
                 disabled={isLoading}
-                className="border-1 border-gray-800 rounded w-[30%] text-center bg-gray-200 px-2"
+                type="button"
+                className="border-1 border-gray-800 rounded w-[30%] text-center bg-gray-200 px-2 cursor-pointer"
                 onClick={() => handleCheckCoupon(couponCode)}
               >
                 Apply
               </button>
             </div>
+            <hr />
           </div>
-          <hr />
           <div className="flex justify-between">
             <b>Total Amount</b>
             <p>

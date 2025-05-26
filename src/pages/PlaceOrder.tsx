@@ -25,6 +25,7 @@ const PlaceOrder = () => {
     cartItems,
     cartTotal,
     loading: cartLoading,
+    coupon,
   } = useSelector((state: RootState) => state.cartReducer);
 
   const { user } = useSelector((state: RootState) => state.userReducer);
@@ -79,6 +80,7 @@ const PlaceOrder = () => {
   };
 
   const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("submit");
     e.preventDefault();
 
     if (!formData) return;
@@ -128,8 +130,7 @@ const PlaceOrder = () => {
               {
                 items: orderData.orderItems,
                 shippingInfo: formData,
-                // cartTotal,
-                // coupon,
+                coupon,
               },
               {
                 headers: {
@@ -273,13 +274,13 @@ const PlaceOrder = () => {
 
         <div className="mt-8">
           <div className="mt-8 min-w-80">
-            <CartTotal show={false} />
+            <CartTotal show={false} currentPage={"placeOrder"} />
           </div>
           <div className="mt-12">
-            <Title text1={"PAYMENT"} text2={"METHOD"} />
+            <Title text1={"PAYMENT"} text2={"METHODS"} />
 
             {/* change later - ui */}
-            <PaymentMethods setMethod={setMethod} />
+            <PaymentMethods setMethod={setMethod} cartTotal={cartTotal} />
             <div className="w-full text-end mt-8">
               <button
                 type="submit"

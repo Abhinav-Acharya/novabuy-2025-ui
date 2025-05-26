@@ -3,8 +3,10 @@ import "./paymentMethods.css";
 
 const PaymentMethods = ({
   setMethod,
+  cartTotal,
 }: {
   setMethod: (method: "Stripe" | "Razorpay" | "COD") => void;
+  cartTotal: number;
 }) => {
   return (
     <>
@@ -21,7 +23,7 @@ const PaymentMethods = ({
             <span className="radio-label text-lg">COD</span>
           </span>
         </label>
-        <label>
+        <label hidden={cartTotal <= 0}>
           <input
             // checked=""
             className="radio-input"
@@ -31,7 +33,11 @@ const PaymentMethods = ({
           />
           <span className="radio-tile">
             <span className="radio-icon">
-              <img src={frontend_assets.stripe_logo} alt="" />
+              <img
+                src={frontend_assets.stripe_logo}
+                className="object-contain p-2"
+                alt=""
+              />
             </span>
             {/* <span className="radio-label">Stripe</span> */}
           </span>

@@ -1,4 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  GetDiscountResponse,
+  MessageResponse,
+  NewCouponRequest,
+} from "../../types/api-types";
 
 export const couponApi = createApi({
   reducerPath: "couponApi",
@@ -7,11 +12,11 @@ export const couponApi = createApi({
   }),
   tagTypes: ["coupons"],
   endpoints: (builder) => ({
-    getDiscountAmount: builder.query({
+    getDiscountAmount: builder.query<GetDiscountResponse, string>({
       query: (code) => `discount?couponCode=${code}`,
     }),
 
-    createCoupon: builder.mutation({
+    createCoupon: builder.mutation<MessageResponse, NewCouponRequest>({
       query: ({ adminUserId, coupon, amount }) => ({
         url: `coupon/new?id=${adminUserId}`,
         method: "POST",

@@ -9,7 +9,6 @@ import NotFoundPage from "./NotFoundPage";
 import Orders from "./Orders";
 import PlaceOrder from "./PlaceOrder";
 import ProductPage from "./Product";
-import Verify from "./Verify";
 
 export {
   About,
@@ -23,5 +22,4 @@ export {
   Orders,
   PlaceOrder,
   ProductPage,
-  Verify,
 };

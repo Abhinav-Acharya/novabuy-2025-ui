@@ -91,7 +91,7 @@ const Orders = () => {
           <div>
             {allOrdersData.orders.map((order, index) => (
               <div
-                className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2.5fr_1.3fr_0.5fr_1fr] gap-3 items-center border-2 border-gray-200 p-4 md:p-3 my-3 md:my-4 text-xs sm:text-sm text-gray-800"
+                className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1.5fr_0.5fr_1fr] gap-3 items-center border-2 border-gray-200 p-4 md:p-3 my-3 md:my-4 text-xs sm:text-sm text-gray-800"
                 key={index}
               >
                 <img className="w-12" src={admin_assets.parcel_icon} alt="" />
@@ -101,8 +101,14 @@ const Orders = () => {
                     <div>
                       {
                         <p className="py-0.5" key={index}>
-                          {order.orderItem.name} x {order.orderItem.quantity}{" "}
-                          <span> ("{order.orderItem.size}") </span>
+                          {order.orderItem.name} x{" "}
+                          <span className="font-semibold">
+                            {order.orderItem.quantity}{" "}
+                          </span>
+                          <span hidden={!order.orderItem.size}>
+                            {" "}
+                            ("{order.orderItem.size}"){" "}
+                          </span>
                         </p>
                       }
                     </div>

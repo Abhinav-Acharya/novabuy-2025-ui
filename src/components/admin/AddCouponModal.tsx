@@ -1,9 +1,9 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { useCreateCouponMutation } from "../../redux/api/couponApi";
-import { CustomError } from "../../types/api-types";
 import { Coupon } from "../../types/types";
+import { responseToast } from "../../utils/features";
 
 interface IAddCouponModal {
   userId: string;
@@ -13,28 +13,23 @@ interface IAddCouponModal {
 
 const AddCouponModal = ({ isOpen, onClose, userId }: IAddCouponModal) => {
   const [code, setCode] = useState<Coupon["code"]>("");
-  const [amount, setAmount] = useState<Coupon["amount"]>();
+  const [amount, setAmount] = useState("");
 
-  const [createCoupon, { isLoading, error, isError }] =
-    useCreateCouponMutation();
+  const [createCoupon, { isLoading }] = useCreateCouponMutation();
 
-  const handleCreate = async () => {
+  const handleCreate = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
       const res = await createCoupon({
         adminUserId: userId,
         coupon: code,
-        amount: amount,
+        amount: Number(amount),
       });
 
-      if (isError) toast.error((error as CustomError).data.message);
-
-      if (res) {
-        toast.success(res.data.message);
-        setCode("");
-      }
+      if (res) responseToast(res);
     } catch (error) {
       if (error instanceof Error && error.message) {
-        toast.error(error.message);
+        console.error(error);
       } else {
         toast.error("Error creating coupon");
       }
@@ -48,9 +43,9 @@ const AddCouponModal = ({ isOpen, onClose, userId }: IAddCouponModal) => {
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center px-4 backdrop-blur-xs">
         <DialogPanel className="w-full max-w-[30%] max-h-[95%] overflow-y-auto bg-white p-6 rounded-lg shadow-xl">
           <DialogTitle className="text-xl font-semibold mb-4 text-center">
-            Edit Coupon
+            Add a new Coupon
           </DialogTitle>
-          <form action="submit">
+          <form onSubmit={(e) => handleCreate(e)}>
             <div className="flex flex-col gap-4">
               <div className="w-full">
                 <p className="mb-2">
@@ -73,7 +68,7 @@ const AddCouponModal = ({ isOpen, onClose, userId }: IAddCouponModal) => {
                   className="w-full px-3 py-2 border-2 rounded-md"
                   type="number"
                   placeholder="Enter discount amount"
-                  onChange={(e) => setAmount(Number(e.target.value))}
+                  onChange={(e) => setAmount(e.target.value)}
                   value={amount}
                   required
                 />
@@ -86,7 +81,7 @@ const AddCouponModal = ({ isOpen, onClose, userId }: IAddCouponModal) => {
                   Cancel
                 </button>
                 <button
-                  onClick={handleCreate}
+                  type="submit"
                   className="px-4 py-2 bg-black text-white rounded-sm cursor-pointer"
                   disabled={isLoading}
                 >

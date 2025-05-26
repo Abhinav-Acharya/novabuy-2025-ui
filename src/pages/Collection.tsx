@@ -172,11 +172,11 @@ const Collection = () => {
           {/* products */}
           {allProductsLoading ? (
             <>
-              <LoadingText text="Fetching all products ..." />
+              <LoadingText text="Loading all products ..." />
             </>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 gap-y-6">
                 {filterProducts.map((item, index) => (
                   <ProductItem key={index} product={item} />
                 ))}

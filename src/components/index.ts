@@ -1,3 +1,4 @@
+import { Navbar_admin, Sidebar_admin } from "./admin";
 import BestSeller from "./BestSeller";
 import CartTotal from "./CartTotal";
 import Footer from "./Footer";
@@ -8,7 +9,9 @@ import Navbar from "./Navbar";
 import Newsletter from "./Newsletter";
 import OurPolicy from "./OurPolicy";
 import ProductItem from "./ProductItem";
+import ProtectedRoute from "./protected-route";
 import RelatedProducts from "./RelatedProducts";
+import ScrollToTop from "./ScrollToTop";
 import SearchBar from "./SearchBar";
 import Title from "./Title";
 
@@ -19,11 +22,15 @@ export {
   Hero,
   LatestCollection,
   Navbar,
+  Navbar_admin,
   Newsletter,
   OurPolicy,
   ProductItem,
+  ProtectedRoute,
   RelatedProducts,
   ScreenLoader,
+  ScrollToTop,
   SearchBar,
+  Sidebar_admin,
   Title,
 };

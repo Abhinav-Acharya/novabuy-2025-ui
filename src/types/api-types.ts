@@ -14,6 +14,11 @@ export type MessageResponse = {
   message: string;
 };
 
+export type GetDiscountResponse = {
+  success: boolean;
+  discount: number;
+};
+
 export type UpdateCartReqBody = {
   userId: string;
   cartItems: ICartReducerInitialState["cartItems"];
@@ -96,6 +101,12 @@ export type NewProductRequest = {
   id: string;
   // product: Omit<Product, "_id" | "date">;
   formData: FormData;
+};
+
+export type NewCouponRequest = {
+  adminUserId: string;
+  coupon: string;
+  amount: number;
 };
 
 export type UpdateProductRequest = {

@@ -130,7 +130,7 @@ const Add = () => {
             {[0, 1, 2, 3].map((num) => (
               <label htmlFor={`image${num}`} key={num}>
                 <img
-                  className="w-20"
+                  className="w-30 h-30 object-contain"
                   src={
                     imagePreview?.[num]
                       ? imagePreview[num]

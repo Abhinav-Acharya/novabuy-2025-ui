@@ -10,6 +10,7 @@ const initialState: ICartReducerInitialState = {
   subTotal: 0,
   shippingCharges: 0,
   discount: 0,
+  coupon: undefined,
   tax: 0,
   cartTotal: 0,
   shippingInfo: null,
@@ -136,14 +137,20 @@ export const cartReducer = createSlice({
 
       state.tax = state.subTotal * 0.18;
 
-      state.cartTotal =
-        state.subTotal + state.tax + state.shippingCharges - state.discount;
+      state.cartTotal = Math.max(
+        state.subTotal + state.tax + state.shippingCharges - state.discount,
+        0
+      );
 
       state.loading = false;
     },
 
     applyDiscount: (state, action: PayloadAction<number>) => {
       state.discount = action.payload;
+    },
+
+    saveCoupon: (state, action: PayloadAction<string>) => {
+      state.coupon = action.payload;
     },
 
     updateCartFromDb: (state, action) => {
@@ -202,4 +209,5 @@ export const {
   setPaymentMethod,
   clearCartSource,
   applyDiscount,
+  saveCoupon,
 } = cartReducer.actions;

@@ -28,7 +28,6 @@ const Coupons = () => {
     isError: allCouponsIsError,
     error: allCouponsError,
     isLoading: allCouponsIsLoading,
-    refetch,
   } = useGetAllCouponsQuery(user?._id || "");
 
   if (allCouponsIsError)
@@ -114,7 +113,6 @@ const Coupons = () => {
                 <button
                   onClick={() => deleteHandler(coupon._id)}
                   className="cursor-pointer right-0"
-                  // disabled={deleteUserIsLoading}
                 >
                   <MdDeleteForever size={26} color="red" />
                 </button>
@@ -129,7 +127,6 @@ const Coupons = () => {
           userId={user?._id || ""}
           onClose={() => {
             setAddModalOpen(false);
-            refetch();
           }}
         />
       )}
