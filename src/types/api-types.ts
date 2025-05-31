@@ -48,6 +48,7 @@ export type AllProductsResponse = {
 export type CategoriesResponse = {
   success: boolean;
   categories: string[];
+  subCategories: string[];
 };
 
 export type AllOrdersResponse = {
@@ -126,7 +127,7 @@ export type NewOrderRequest = {
   // subTotal: number;
   // tax: number;
   // shippingCharges: number;
-  // discount: number;l.ap
+  // discount: number;
   total: number;
   user: string;
   paymentMethod: "COD" | "Stripe" | "Razorpay" | null;

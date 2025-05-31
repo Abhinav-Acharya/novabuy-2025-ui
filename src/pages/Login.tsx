@@ -72,20 +72,20 @@ const Login = () => {
             />
           </>
         )} */}
-        <input
-          onChange={(e) =>
-            setGender(e.target.value.toLowerCase() as typeof gender)
-          }
-          type="text"
+        <select
+          onChange={(e) => setGender(e.target.value as typeof gender)}
           className="w-full px-3 py-2 border border-gray-800"
-          placeholder="Gender"
-          // required
-        />
+          value={gender}
+          required
+        >
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
         <input
           onChange={(e) => setDob(e.target.value)}
           type="date"
           className="w-full px-3 py-2 border border-gray-800"
-          placeholder="Password"
+          placeholder="Date of birth"
           // required
         />
         {/* <div className="w-full flex justify-between text-sm mt-[-8px]">

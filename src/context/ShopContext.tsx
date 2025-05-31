@@ -3,12 +3,16 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { useAllProductsQuery } from "../redux/api/productApi";
+import {
+  useAllProductsQuery,
+  useCategoriesAndSubcategoriesQuery,
+} from "../redux/api/productApi";
 import { CustomError } from "../types/api-types";
 import { Product, RootState } from "../types/types";
 
@@ -19,16 +23,17 @@ type Value = {
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   showSearch: boolean;
   setShowSearch: React.Dispatch<React.SetStateAction<boolean>>;
-  // cartIsLoading: boolean;
   userLoading: boolean;
   navigate: NavigateFunction;
   allProductsLoading: boolean;
   categories: string[];
   subCategories: (string | undefined)[];
+  categoriesAndSubcategoriesLoading: boolean;
 };
 
 const ShopContext = createContext<Value | null>(null);
 
+//eslint-disable-next-line
 export const useShopContext = () => {
   const context = useContext(ShopContext);
   if (!context) {
@@ -38,6 +43,8 @@ export const useShopContext = () => {
 };
 
 const ShopContextProvider = ({ children }: { children: ReactNode }) => {
+  const navigate = useNavigate();
+
   const [search, setSearch] = useState<Value["search"]>("");
   const [showSearch, setShowSearch] = useState<Value["showSearch"]>(false);
   const [products, setProducts] = useState<Product[]>([]);
@@ -46,13 +53,9 @@ const ShopContextProvider = ({ children }: { children: ReactNode }) => {
     []
   );
 
-  const navigate = useNavigate();
-  // const dispatch = useDispatch();
-
-  const {
-    //  user,
-    loading: userLoading,
-  } = useSelector((state: RootState) => state.userReducer);
+  const { loading: userLoading } = useSelector(
+    (state: RootState) => state.userReducer
+  );
 
   const {
     data: productsData,
@@ -61,55 +64,71 @@ const ShopContextProvider = ({ children }: { children: ReactNode }) => {
     isLoading: allProductsLoading,
   } = useAllProductsQuery("");
 
+  const {
+    data: categoriesAndSubcategoriesData,
+    isError: categoriesAndSubcategoriesQueryIsError,
+    error: categoriesAndSubcategoriesQueryError,
+    isLoading: categoriesAndSubcategoriesLoading,
+  } = useCategoriesAndSubcategoriesQuery("");
+
   useEffect(() => {
     if (allProductsQueryIsError) {
       toast.error((allProductsQueryError as CustomError).data.message);
     } else if (!allProductsLoading && productsData) {
-      setCategories([
-        ...new Set(productsData?.products.map((item) => item.category)),
-      ]);
-      setSubCategories([
-        ...new Set(productsData?.products.map((item) => item.subCategory)),
-      ]);
       setProducts(productsData.products);
+    }
+
+    if (categoriesAndSubcategoriesQueryIsError) {
+      toast.error(
+        (categoriesAndSubcategoriesQueryError as CustomError).data.message
+      );
+    } else if (
+      !categoriesAndSubcategoriesLoading &&
+      categoriesAndSubcategoriesData?.success
+    ) {
+      setCategories(categoriesAndSubcategoriesData.categories);
+      setSubCategories(categoriesAndSubcategoriesData.subCategories);
     }
   }, [
     allProductsQueryIsError,
     allProductsLoading,
     productsData,
     allProductsQueryError,
+    categoriesAndSubcategoriesQueryIsError,
+    categoriesAndSubcategoriesLoading,
+    categoriesAndSubcategoriesQueryError,
+    categoriesAndSubcategoriesData,
   ]);
 
-  // const {
-  //   data: cartData,
-  //   error: cartError,
-  //   isError: cartIsError,
-  //   isLoading: cartIsLoading,
-  // } = useGetUserCartQuery(user?._id ?? "", { skip: !user?._id });
-
-  // useEffect(() => {
-  //   if (cartIsError) {
-  //     toast.error((cartError as CustomError).data.message);
-  //   } else if (cartData?.success && user && !cartIsLoading) {
-  //     dispatch(updateCartFromDb(cartData.cartData));
-  //     console.log("db to redux");
-  //   }
-  // }, [cartIsError, cartError, cartData, user, cartIsLoading, dispatch]);
-
-  const value: Value = {
-    products,
-    currency: "₹",
-    search,
-    setSearch,
-    showSearch,
-    setShowSearch,
-    navigate,
-    // cartIsLoading,
-    userLoading,
-    allProductsLoading,
-    categories,
-    subCategories,
-  };
+  const value = useMemo(
+    () => ({
+      products,
+      currency: "₹",
+      search,
+      setSearch,
+      showSearch,
+      setShowSearch,
+      navigate,
+      userLoading,
+      allProductsLoading,
+      categories,
+      subCategories,
+      categoriesAndSubcategoriesLoading,
+    }),
+    [
+      products,
+      search,
+      setSearch,
+      showSearch,
+      setShowSearch,
+      navigate,
+      userLoading,
+      allProductsLoading,
+      categories,
+      subCategories,
+      categoriesAndSubcategoriesLoading,
+    ]
+  );
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 };

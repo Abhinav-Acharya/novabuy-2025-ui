@@ -32,7 +32,6 @@ const Orders = () => {
     const updateCartInDb = async () => {
       if (user) {
         await updateUserCart({ userId: user._id, cartItems });
-        // console.log("redux to db in order page");
       }
 
       if (cartIsError) {

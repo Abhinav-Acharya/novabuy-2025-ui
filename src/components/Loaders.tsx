@@ -66,11 +66,13 @@ export const DeleteIcon = ({
   );
 };
 
-export const LoadingText = ({ text }: { text: string }) => {
+export const LoadingText = ({ text }: { text?: string }) => {
   return (
     <div className="flex gap-3 items-center justify-center w-full h-full">
       <Loader2 className="h-6 w-6 animate-spin" />
-      <p className="text-lg font-medium text-gray-700">{text}</p>
+      {text ? (
+        <p className="text-lg font-medium text-gray-700">{text}</p>
+      ) : null}
     </div>
   );
 };

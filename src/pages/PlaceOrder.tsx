@@ -80,7 +80,6 @@ const PlaceOrder = () => {
   };
 
   const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("submit");
     e.preventDefault();
 
     if (!formData) return;
@@ -91,7 +90,7 @@ const PlaceOrder = () => {
       if (!cartItems) return;
 
       const orderData: NewOrderRequest = {
-        shippingInfo: formData!,
+        shippingInfo: formData,
         orderItems: cartItems,
         user: user?._id ?? "",
         total: cartTotal,

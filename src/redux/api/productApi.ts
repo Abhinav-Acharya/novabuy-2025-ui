@@ -28,7 +28,7 @@ export const productApi = createApi({
       providesTags: ["product"],
     }),
 
-    categories: builder.query<CategoriesResponse, string>({
+    categoriesAndSubcategories: builder.query<CategoriesResponse, string>({
       query: () => `categories`,
       providesTags: ["product"],
     }),
@@ -58,7 +58,7 @@ export const productApi = createApi({
       query: ({ formData, id }) => ({
         url: `new?id=${id}`,
         method: "POST",
-        body:  formData ,
+        body: formData,
       }),
       invalidatesTags: ["product"],
     }),
@@ -85,7 +85,7 @@ export const productApi = createApi({
 export const {
   useLatestProductsQuery,
   useAllProductsQuery,
-  useCategoriesQuery,
+  useCategoriesAndSubcategoriesQuery,
   useSearchProductsQuery,
   useNewProductMutation,
   useProductDetailsQuery,

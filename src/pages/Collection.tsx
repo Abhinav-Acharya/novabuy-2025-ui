@@ -13,6 +13,7 @@ const Collection = () => {
     allProductsLoading,
     categories,
     subCategories,
+    categoriesAndSubcategoriesLoading,
   } = useShopContext();
 
   const [showFilter, setShowFilter] = useState<boolean>(false);
@@ -87,10 +88,12 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilter();
+    //eslint-disable-next-line
   }, [category, subCategory, search, showSearch, products]);
 
   useEffect(() => {
     sortProducts();
+    //eslint-disable-next-line
   }, [sortType]);
 
   return (
@@ -116,22 +119,28 @@ const Collection = () => {
             } sm:block`}
           >
             <p className="mb-3 text-sm font-medium">CATEGORIES</p>
-            <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-              {categories.map((item, index) => (
-                <div key={index}>
-                  <p className="flex gap-2">
-                    <input
-                      type="checkbox"
-                      className="w-3"
-                      value={item}
-                      disabled={allProductsLoading}
-                      onChange={toggleCategory}
-                    />
-                    {item}
-                  </p>
-                </div>
-              ))}
-            </div>
+            {categoriesAndSubcategoriesLoading ? (
+              <div className="my-4">
+                <LoadingText />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
+                {categories.map((item, index) => (
+                  <div key={index}>
+                    <p className="flex gap-2">
+                      <input
+                        type="checkbox"
+                        className="w-3"
+                        value={item}
+                        disabled={allProductsLoading}
+                        onChange={toggleCategory}
+                      />
+                      {item}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div
             className={`border border-gray-300 pl-5 py-3 my-5 ${
@@ -139,21 +148,27 @@ const Collection = () => {
             } sm:block`}
           >
             <p className="mb-3 text-sm font-medium">SUB CATEGORIES</p>
-            <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-              {subCategories.map((item, index) => (
-                <div key={index}>
-                  <p className="flex gap-2">
-                    <input
-                      type="checkbox"
-                      className="w-3"
-                      value={item}
-                      onChange={toggleSubCategory}
-                    />
-                    {item}
-                  </p>
-                </div>
-              ))}
-            </div>
+            {categoriesAndSubcategoriesLoading ? (
+              <div className="my-4">
+                <LoadingText />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
+                {subCategories.map((item, index) => (
+                  <div key={index}>
+                    <p className="flex gap-2">
+                      <input
+                        type="checkbox"
+                        className="w-3"
+                        value={item}
+                        onChange={toggleSubCategory}
+                      />
+                      {item}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         {/* Right section */}

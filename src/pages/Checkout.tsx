@@ -34,12 +34,13 @@ const CheckOutForm = () => {
   );
 
   const [newOrder, { error: newOrderError, isError }] = useNewOrderMutation();
-  
+
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!shippingInfo || !cartItems || !paymentMethod) return;
+
     if (!stripe || !elements) return;
-    setIsProcessing(true);
 
     if (!user || !user._id) {
       setIsProcessing(false);
@@ -47,9 +48,11 @@ const CheckOutForm = () => {
       return;
     }
 
+    setIsProcessing(true);
+
     const orderData: NewOrderRequest = {
-      shippingInfo: shippingInfo!,
-      orderItems: cartItems!,
+      shippingInfo: shippingInfo,
+      orderItems: cartItems,
       // subtotal,
       // tax,
       // discount,
@@ -59,15 +62,15 @@ const CheckOutForm = () => {
       paymentMethod,
     };
 
-    const { paymentIntent, error } = await stripe.confirmPayment({
+    const { paymentIntent, error: paymentError } = await stripe.confirmPayment({
       elements,
       confirmParams: { return_url: window.location.origin },
       redirect: "if_required",
     });
 
-    if (error) {
+    if (paymentError) {
       setIsProcessing(false);
-      return toast.error(error.message || "Something Went Wrong");
+      return toast.error(paymentError.message || "Something Went Wrong");
     }
 
     if (paymentIntent.status === "succeeded") {
@@ -76,7 +79,11 @@ const CheckOutForm = () => {
 
       dispatch(resetCart("order"));
       responseToast(res, navigate, "/orders");
+    } else {
+      setIsProcessing(false);
+      return toast.error("Payment failed. Please try again.");
     }
+
     setIsProcessing(false);
   };
 
@@ -93,7 +100,7 @@ const CheckOutForm = () => {
             disabled={isProcessing}
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200 disabled:bg-gray-400"
           >
-            {isProcessing ? "Processing..." : "Pay Now"}
+            {isProcessing ? "Processing..." : "Pay"}
           </button>
         </form>
       </div>

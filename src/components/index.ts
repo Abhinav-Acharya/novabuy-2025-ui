@@ -32,5 +32,5 @@ export {
   ScrollToTop,
   SearchBar,
   Sidebar_admin,
-  Title,
+  Title
 };
