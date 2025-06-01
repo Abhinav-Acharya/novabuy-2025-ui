@@ -1,10 +1,12 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import React, { useState } from "react";
-import toast from "react-hot-toast";
 import { admin_assets } from "../../assets/admin_assets/assets";
 import { useUpdateProductMutation } from "../../redux/api/productApi";
 import { Product } from "../../types/types";
-import { categoriesAndSubcategories } from "../../utils/features";
+import {
+  categoriesAndSubcategories,
+  responseToast,
+} from "../../utils/features";
 
 interface IEditProductModal {
   userId: string;
@@ -97,17 +99,11 @@ const EditProductModal = ({
         productId: product._id,
         formData,
         userId,
-      }).unwrap();
+      });
 
-      if (res.success) {
-        toast.success(res.message);
-      }
+      responseToast(res);
     } catch (err: unknown) {
-      if (err instanceof Error && err.message) {
-        toast.error(err.message);
-      } else {
-        toast.error("Error updating product");
-      }
+      console.error(err);
     } finally {
       onClose();
     }

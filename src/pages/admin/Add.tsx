@@ -243,6 +243,7 @@ const Add = () => {
             <input
               className="w-full px-3 py-2"
               type="number"
+              min={0}
               placeholder={"Stock available"}
               onChange={(e) => setStock(e.target.value)}
               value={stock}

@@ -139,7 +139,7 @@ const Cart = () => {
                       <Link to={`/product/${item._id}`}>
                         <img
                           src={item?.image}
-                          className="w-16 sm:w-20"
+                          className="w-16 sm:w-20 object-contain"
                           alt=""
                         />
                       </Link>

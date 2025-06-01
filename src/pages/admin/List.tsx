@@ -77,7 +77,7 @@ const List = () => {
               key={index}
             >
               <img
-                className="w-auto h-20 object-cover cursor-pointer block mx-auto"
+                className="w-auto h-20 object-contain cursor-pointer block mx-auto"
                 src={item.image[0]}
                 alt=""
                 onClick={() => navigate(`/product/${item._id}`)}
@@ -89,7 +89,7 @@ const List = () => {
                 {item.price}
               </p>
               <p className="text-center text-[14px]">{item.stock}</p>
-              <div className="flex flex-col items-center gap-2 justify-end md:justify-center">
+              <div className="flex flex-col items-center gap-3 justify-end md:justify-center">
                 <button
                   onClick={() => updateHandler(item)}
                   className="cursor-pointer flex gap-2 px-3 border-1 rounded-full border-black"
