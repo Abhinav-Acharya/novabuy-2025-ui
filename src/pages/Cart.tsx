@@ -1,3 +1,4 @@
+import { MinusCircle, PlusCircle } from "lucide-react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { MdDeleteForever } from "react-icons/md";
@@ -99,7 +100,7 @@ const Cart = () => {
 
   return (
     <>
-      <div className="border-t border-gray-950/20 pt-14">
+      <div className="border-t border-gray-950/20 pt-14 pr-2">
         <div className="text-2xl mb-3">
           <Title text1={"YOUR"} text2={"CART"} />
         </div>
@@ -117,7 +118,7 @@ const Cart = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-[3fr_1fr] gap-10">
+          <div className="grid grid-rows sm:grid sm:grid-cols-[3fr_1fr] gap-10">
             {/* Cart Items Section */}
             <div>
               <div className="text-end">
@@ -161,22 +162,50 @@ const Cart = () => {
                         </div>
                       </div>
                     </div>
-                    <input
-                      className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
-                      disabled={cartIsLoading || cartLoading}
-                      max={item.stock}
-                      onChange={(e) =>
-                        handleCartAction(
-                          "update",
-                          item,
-                          item.size,
-                          Number(e.target.value)
-                        )
-                      }
-                      type="number"
-                      min={1}
-                      defaultValue={item.quantity}
-                    />
+                    <div className="flex items-center gap-3">
+                      <button
+                        className="cursor-pointer"
+                        disabled={
+                          cartIsLoading || cartLoading || item.quantity <= 1
+                        }
+                        onClick={() =>
+                          handleCartAction(
+                            "update",
+                            item,
+                            item.size,
+                            item.quantity - 1
+                          )
+                        }
+                      >
+                        <MinusCircle />
+                      </button>
+                      <input
+                        className="border-2 rounded-md border-gray-600 w-12 py-1 text-center"
+                        min={1}
+                        max={item.stock}
+                        type="number"
+                        value={item.quantity}
+                        readOnly
+                      />
+                      <button
+                        className="cursor-pointer"
+                        disabled={
+                          cartIsLoading ||
+                          cartLoading ||
+                          item.quantity >= item.stock
+                        }
+                        onClick={() =>
+                          handleCartAction(
+                            "update",
+                            item,
+                            item.size,
+                            item.quantity + 1
+                          )
+                        }
+                      >
+                        <PlusCircle />
+                      </button>
+                    </div>
                     <button
                       className="cursor-pointer"
                       disabled={cartIsLoading || cartLoading}

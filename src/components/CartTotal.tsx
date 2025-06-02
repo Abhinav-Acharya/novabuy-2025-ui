@@ -112,7 +112,7 @@ const CartTotal = ({
             </div>
             <div className="flex justify-between">
               <input
-                className="border-1 border-gray-800 rounded w-[50%] text-center px-2"
+                className="border-1 border-gray-800 rounded w-[50%] text-center px-2 py-0.5"
                 type="text"
                 placeholder="Coupon Code"
                 value={couponCode}
@@ -121,7 +121,7 @@ const CartTotal = ({
               <button
                 disabled={isLoading}
                 type="button"
-                className="border-1 border-gray-800 rounded w-[30%] text-center bg-gray-200 px-2 cursor-pointer"
+                className="border-1 border-gray-800 rounded w-[30%] text-center bg-gray-200 px-2 cursor-pointer py-0.5"
                 onClick={() => handleCheckCoupon(couponCode)}
               >
                 Apply

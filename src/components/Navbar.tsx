@@ -10,6 +10,7 @@ import { auth } from "../utils/firebase";
 
 const Navbar = ({ user }: IHeaderPropsType) => {
   const [visible, setVisible] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const { setShowSearch, setSearch, navigate } = useShopContext();
 
@@ -70,7 +71,13 @@ const Navbar = ({ user }: IHeaderPropsType) => {
           />
           <div className="group relative">
             <img
-              onClick={() => (user ? null : navigate("/login"))}
+              onClick={() => {
+                if (!user) {
+                  navigate("/login");
+                } else {
+                  setDropdownOpen((prev) => !prev);
+                }
+              }}
               src={user ? user.photo : frontend_assets.profile_icon}
               alt="user"
               className={
@@ -81,24 +88,40 @@ const Navbar = ({ user }: IHeaderPropsType) => {
             />
 
             {user && (
-              <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
+              <div
+                className={`${
+                  dropdownOpen ? "block" : "hidden"
+                } group-hover:block absolute right-0 pt-4`}
+                onMouseLeave={() => setDropdownOpen(false)}
+              >
                 <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded-sm">
                   <p className="cursor-pointer hover:text-black ">
                     {user.name}
                   </p>
                   <p
-                    onClick={() => navigate("/orders")}
+                    onClick={() => {
+                      navigate("/orders");
+                      setDropdownOpen(false);
+                    }}
                     className="cursor-pointer hover:text-black "
                   >
                     Orders
                   </p>
                   {user.role === "admin" && (
                     <p className="cursor-pointer hover:text-black ">
-                      <Link to={"/admin"}>Admin</Link>
+                      <Link
+                        to={"/admin"}
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Admin
+                      </Link>
                     </p>
                   )}
                   <p
-                    onClick={logoutHandler}
+                    onClick={() => {
+                      logoutHandler();
+                      setDropdownOpen(false);
+                    }}
                     className="cursor-pointer hover:text-black "
                   >
                     Logout
