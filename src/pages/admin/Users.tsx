@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { useSelector } from "react-redux";
+import DeleteModal from "../../components/admin/DeleteModal";
 import { LoadingText } from "../../components/Loaders";
 import {
   useAllUsersQuery,
@@ -10,7 +11,6 @@ import {
 import { CustomError } from "../../types/api-types";
 import { RootState, User } from "../../types/types";
 import { responseToast } from "../../utils/features";
-import DeleteModal from "../../components/admin/DeleteModal";
 
 const Users = () => {
   const { user: loggedInUser } = useSelector(
@@ -18,7 +18,7 @@ const Users = () => {
   );
 
   const [list, setList] = useState<User[]>([]);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [deletingUserId, setDeletingUserId] = useState<User["_id"] | null>(
     null
   );
@@ -116,7 +116,9 @@ const Users = () => {
                 <MdEdit size={20} color="black" />
               </button>
               <button
-                onClick={() => deleteHandler(user._id)}
+                onClick={() => {
+                  deleteHandler(user._id);
+                }}
                 className="cursor-pointer right-0"
               >
                 <MdDeleteForever size={26} color="red" />

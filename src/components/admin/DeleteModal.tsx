@@ -53,8 +53,8 @@ const DeleteModal = ({
         });
       } else if (type === "user") {
         res = await deleteUser({
-          userId: userId ?? "",
-          adminUserId: id,
+          userId: id,
+          adminUserId: userId,
         });
       }
 
