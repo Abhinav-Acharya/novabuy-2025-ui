@@ -77,7 +77,7 @@ const Users = () => {
       <p className="mb-6 text-2xl text-center">All Users</p>
       <div className="flex flex-col gap-2">
         {/* list table title */}
-        <div className="hidden md:grid grid-cols-[0.5fr_1.3fr_0.5fr_1.8fr_0.5fr_1.4fr] items-center py-1 px-2 border bg-gray-100 text-sm">
+        <div className="hidden md:grid grid-cols-[0.5fr_1.3fr_0.5fr_2fr_0.8fr_1.4fr] items-center py-1 px-2 border bg-gray-100 text-sm">
           <b className="text-center text-[16px]">Image</b>
           <b className="text-center text-[16px]">Name</b>
           <b className="text-center text-[16px]">Gender</b>
@@ -89,7 +89,7 @@ const Users = () => {
         {/* Product list */}
         {list.map((user, index) => (
           <div
-            className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[0.5fr_1.3fr_0.5fr_1.8fr_0.5fr_1.4fr] items-center py-1 px-2 border bg-gray-100 text-sm"
+            className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[0.5fr_1.3fr_0.5fr_2fr_0.8fr_1.4fr] items-center py-1 px-2 border bg-gray-100 text-sm min-h-[50px] max-h-auto"
             key={index}
           >
             <img
@@ -101,23 +101,23 @@ const Users = () => {
             <p className="text-center text-[14px] capitalize">{user.gender}</p>
             <p className="text-center text-[14px]">{user.email}</p>
             <p className="text-center text-[14px] capitalize">{user.role}</p>
-            <div className="flex items-center gap-2 justify-end md:justify-center my-1.5">
+            <div
+              className="flex gap-2 my-1.5 justify-center items-center"
+              hidden={loggedInUser?._id === user._id}
+            >
               <button
                 onClick={() => updateHandler(user._id)}
-                className="cursor-pointer flex gap-1 px-2 border-1 rounded-full border-black p-0.5"
+                className="cursor-pointer flex gap-1 px-2 border-1 rounded-full border-black p-0.5 mx-2"
                 disabled={userUpdateLoading}
               >
                 <span className="text-[14px]">
-                  {user.role === "admin"
-                    ? "Demote to User"
-                    : "Promote to Admin"}
+                  {user.role === "admin" ? "Remove as Admin" : "Make Admin"}
                 </span>
                 <MdEdit size={20} color="black" />
               </button>
               <button
                 onClick={() => deleteHandler(user._id)}
                 className="cursor-pointer right-0"
-                hidden={loggedInUser?._id === user._id}
               >
                 <MdDeleteForever size={26} color="red" />
               </button>
